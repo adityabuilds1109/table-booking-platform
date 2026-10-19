@@ -19,6 +19,7 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - When fixing a bug, find the root cause from the real error output first. No guess-patches, and no try/catch that hides errors.
 - Never weaken, skip or delete tests to make them pass.
 - If a requirement is unclear, ask instead of assuming.
+- Pin devDependency versions compatible with Node 24 and the planned tooling (ts-jest needs TypeScript below 7). Check peer dependencies before installing the latest major.
 
 ## Code conventions
 - TypeScript strict mode. No `any`; use `unknown` and narrow it.
