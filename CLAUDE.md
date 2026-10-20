@@ -28,10 +28,15 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - One central error middleware. Error JSON shape: `{ "error": { "code": string, "message": string } }`.
 - Secrets come only from environment variables. When adding a variable, update `.env.example`.
 - Store all timestamps in UTC.
+- Prisma is pinned to 7.10.1 (8.0 is still a release candidate). Don't upgrade without asking.
+- Database constraints Prisma can't model (exclusion constraint, CHECKs) live as hand-written SQL in migration files. Never regenerate or reset migrations without asking.
 
 ## Environment
 - Windows, PowerShell. Give PowerShell-compatible commands.
 - PostgreSQL runs via Docker Compose.
+- Windows PowerShell 5.1 mangles `\"` inside command arguments. For SQL with quoted identifiers, pipe it to psql on stdin: `@'...'@ | docker compose -f ..\docker-compose.yml exec -T db psql -U booking -d booking`.
+- `prisma migrate dev` doesn't generate the client in Prisma 7. Run `npm run db:generate` after every schema change.
+- The generated Prisma client (`server/src/generated/`) is gitignored. Fresh checkouts and CI need `prisma generate` before `tsc`.
 
 ## Commands
 <!-- Filled in as the project grows -->
