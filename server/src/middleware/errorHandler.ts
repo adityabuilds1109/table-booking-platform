@@ -49,8 +49,8 @@ function send(res: Parameters<ErrorRequestHandler>[2], status: number, code: str
   res.status(status).json({ error: { code, message } });
 }
 
-export const notFoundHandler: RequestHandler = (req) => {
-  throw new AppError(404, 'NOT_FOUND', `Route ${req.method} ${req.path} not found`);
+export const notFoundHandler: RequestHandler = () => {
+  throw new AppError(404, 'NOT_FOUND', 'Route not found');
 };
 
 // Express recognises an error handler by its 4 parameters, so `_next` must stay even though it's unused.
