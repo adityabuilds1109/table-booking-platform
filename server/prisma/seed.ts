@@ -9,6 +9,18 @@ function requireEnv(name: string): string {
   return value;
 }
 
+// Same rules as BCRYPT_COST in src/config.ts (default 12, integer 4-15, at least 10 in production),
+// so seeded hashes cost the same as registered ones. Kept separate because config.ts also requires JWT_SECRET.
+function readBcryptCost(): number {
+  const raw = process.env.BCRYPT_COST;
+  const cost = raw === undefined ? 12 : Number(raw);
+  const min = process.env.NODE_ENV === "production" ? 10 : 4;
+  if (!Number.isInteger(cost) || cost < min || cost > 15) {
+    throw new Error(`BCRYPT_COST must be an integer from ${min} to 15, got "${raw}"`);
+  }
+  return cost;
+}
+
 const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString: requireEnv("DATABASE_URL") }),
 });
@@ -22,8 +34,9 @@ const TABLES = [
 ];
 
 async function main(): Promise<void> {
-  const adminHash = await bcrypt.hash(requireEnv("SEED_ADMIN_PASSWORD"), 10);
-  const userHash = await bcrypt.hash(requireEnv("SEED_USER_PASSWORD"), 10);
+  const cost = readBcryptCost();
+  const adminHash = await bcrypt.hash(requireEnv("SEED_ADMIN_PASSWORD"), cost);
+  const userHash = await bcrypt.hash(requireEnv("SEED_USER_PASSWORD"), cost);
 
   await prisma.user.upsert({
     where: { email: "admin@example.com" },
