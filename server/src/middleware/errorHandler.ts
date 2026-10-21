@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from 'express';
+import jwt from 'jsonwebtoken';
 import { ZodError } from 'zod';
 import { AppError } from '../errors';
 
@@ -70,6 +71,13 @@ export const errorHandler: ErrorRequestHandler = (err: unknown, _req, res, next)
       .map((issue) => (issue.path.length > 0 ? `${issue.path.join('.')}: ${issue.message}` : issue.message))
       .join('; ');
     send(res, 400, 'VALIDATION_ERROR', message);
+    return;
+  }
+
+  // Thrown by jwt.verify in the auth middleware. TokenExpiredError and NotBeforeError are subclasses.
+  // One generic message, so clients can't probe why a token was rejected.
+  if (err instanceof jwt.JsonWebTokenError) {
+    send(res, 401, 'UNAUTHORIZED', 'Missing or invalid authentication token');
     return;
   }
 

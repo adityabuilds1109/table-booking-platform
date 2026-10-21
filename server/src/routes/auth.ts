@@ -6,6 +6,7 @@ import { signToken } from '../auth/token';
 import { config } from '../config';
 import { AppError } from '../errors';
 import { prisma } from '../lib/prisma';
+import { authenticate } from '../middleware/auth';
 import { validate, type ValidatedRequest } from '../middleware/validate';
 
 // Compared against when the email is unknown, so "no such user" costs the same bcrypt time as
@@ -44,6 +45,14 @@ router.post('/login', validate(loginSchema), async (req: ValidatedRequest<LoginI
     token: signToken(user),
     user: { id: user.id, email: user.email, name: user.name, role: user.role },
   });
+});
+
+router.get('/me', authenticate, (req, res) => {
+  // authenticate always sets req.user, but its type is optional, so narrow it instead of using `!`.
+  if (!req.user) {
+    throw new AppError(401, 'UNAUTHORIZED', 'Missing or invalid authentication token');
+  }
+  res.json({ user: req.user });
 });
 
 export default router;
