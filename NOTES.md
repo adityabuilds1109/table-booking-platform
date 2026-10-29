@@ -181,3 +181,11 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** Mutation check (remove the tie-breaker, see what fails). Nothing did.
 - **Fix:** Test now asserts ties are sorted by id; fails 10 of 10 runs without the tie-breaker.
 - **Lesson → CLAUDE.md change?:** No (covered by the mutation-check rule).
+
+### 2026-10-29 — A mutation "passed" because it didn't compile
+
+- **Task:** Ownership mutation check for cancel.
+- **What Claude Code did:** Replaced the ownership condition with `if (false)`; the suite failed, which looked like success.
+- **What was wrong:** The failure was a compile error (TypeScript could no longer narrow `null`), not a failing test.
+- **How I caught it:** It reported the compile error and redid the mutation in a form that compiles. 3 tests then failed on behavior.
+- **Lesson:** Check that a mutation fails on assertions, not on compilation.
