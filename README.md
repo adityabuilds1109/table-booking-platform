@@ -4,4 +4,6 @@ A restaurant table booking system with availability search, double-booking preve
 
 **Stack:** Node.js · TypeScript · Express · PostgreSQL · Prisma · React · Tailwind · Jest · Docker · GitHub Actions
 
+![CI](https://github.com/adityabuilds1109/table-booking-platform/actions/workflows/ci.yml/badge.svg)
+
 🚧 Work in progress
