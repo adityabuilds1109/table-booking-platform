@@ -1,6 +1,7 @@
 import express from 'express';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import authRouter from './routes/auth';
+import tablesRouter from './routes/tables';
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/auth', authRouter);
+app.use('/tables', tablesRouter);
 
 // Must stay last: the 404 catch-all, then the central error middleware.
 app.use(notFoundHandler);
