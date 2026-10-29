@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { AppError } from '../errors';
-import type { Booking } from '../generated/prisma/client';
+import type { Booking, Prisma } from '../generated/prisma/client';
+import { toPage, toSkipTake, type Page, type PaginationQuery } from '../lib/pagination';
 import { prisma } from '../lib/prisma';
 import { assertBookable, endsAtFor } from './rules';
 import type { AvailabilityQuery, CreateBookingInput } from './schemas';
@@ -84,4 +85,43 @@ export async function createBooking(
 
     return tx.booking.create({ data: { userId, tableId, startsAt, endsAt, partySize } });
   });
+}
+
+// What a diner sees in their own booking list. No userId (it is always the caller), and only the table's id and name.
+const myBookingSelect = {
+  id: true,
+  tableId: true,
+  startsAt: true,
+  endsAt: true,
+  partySize: true,
+  status: true,
+  createdAt: true,
+  table: { select: { id: true, name: true } },
+} satisfies Prisma.BookingSelect;
+
+export type MyBooking = Prisma.BookingGetPayload<{ select: typeof myBookingSelect }>;
+
+// The caller's bookings (every status, so cancelled ones stay visible as history), latest start first.
+export async function listMyBookings(userId: string, pagination: PaginationQuery): Promise<Page<MyBooking>> {
+  const where = { userId };
+
+  // One batch transaction so the rows and the total come from the same moment. REPEATABLE READ is what makes that true:
+  // under the default READ COMMITTED each statement takes its own snapshot, and a booking created between the two
+  // queries could make `total` disagree with `data`.
+  const [data, total] = await prisma.$transaction(
+    [
+      prisma.booking.findMany({
+        where,
+        // `id` is a tie-breaker: without it, bookings with the same startsAt (different tables) can swap places between
+        // requests, so a page boundary could repeat one booking and skip another.
+        orderBy: [{ startsAt: 'desc' }, { id: 'asc' }],
+        ...toSkipTake(pagination),
+        select: myBookingSelect,
+      }),
+      prisma.booking.count({ where }),
+    ],
+    { isolationLevel: 'RepeatableRead' },
+  );
+
+  return toPage(data, total, pagination);
 }

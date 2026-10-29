@@ -48,6 +48,7 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - When one Zod field has dependent checks (range, then step), chain them with `.pipe()` so the client gets one error message per field, not stacked ones.
 - Query and params validation uses `validateQuery` / `validateParams` (Express 5 `req.query` is read-only). Never assign to `req.query`.
 - Booking creation must lock the Table row with `SELECT ... FOR UPDATE`. A concurrency test must prove losers are rejected by the app check, not by the exclusion constraint.
+- Never use `--forceExit` to silence Jest's open-handle warning; find the root cause. Timers raced in tests must be cleared. Every concurrency test needs a mutation check proving it fails when the lock is removed.
 
 ## Environment
 

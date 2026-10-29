@@ -163,3 +163,12 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** The mutation check: remove the lock and see which tests fail.
 - **Fix:** Test holder changed to `FOR NO KEY UPDATE`, which doesn't conflict with the foreign-key lock but does conflict with `FOR UPDATE`. After the fix, 3 of 4 tests fail without the lock.
 - **Lesson → CLAUDE.md change?:** Yes. Add: "Every concurrency test needs a mutation check proving it fails when the lock is removed."
+
+### 2026-10-29 — "Jest did not exit" warning was a leaked timer in a test
+
+- **Task:** Concurrency tests for POST /bookings.
+- **What Claude Code did:** Raced `createBooking` against `sleep(2000)` in the "different table" test, and said it had not seen the open-handle warning in unmutated runs.
+- **What was wrong:** The losing timer kept Node alive about 2 seconds. Its claim was also wrong: it had sent earlier runs' output to /dev/null.
+- **How I caught it:** Ran the file myself and saw the warning. Claude Code isolated it by running each test alone.
+- **Fix:** `settlesWithin(promise, ms)` helper that clears its timer in `finally`. No `--forceExit`.
+- **Lesson → CLAUDE.md change?:** Yes.
