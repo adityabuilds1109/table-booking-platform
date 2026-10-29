@@ -1,9 +1,27 @@
-// Placeholder that proves the toolchain works (React, TypeScript, Tailwind). Replaced by the real routes in step 4.
+import { Route, Routes } from 'react-router';
+import GuestOnly from './auth/GuestOnly';
+import RequireAuth from './auth/RequireAuth';
+import Layout from './components/Layout';
+import Availability from './pages/Availability';
+import Login from './pages/Login';
+import MyBookings from './pages/MyBookings';
+import NotFound from './pages/NotFound';
+import Register from './pages/Register';
+
 export default function App() {
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="text-3xl font-bold text-emerald-700">Table Booking</h1>
-      <p className="mt-2 text-slate-600">Client toolchain is working: React, TypeScript and Tailwind.</p>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route index element={<Availability />} />
+        <Route element={<GuestOnly />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+        <Route element={<RequireAuth />}>
+          <Route path="bookings" element={<MyBookings />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
   );
 }
