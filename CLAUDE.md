@@ -25,6 +25,8 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - Never weaken, skip or delete tests to make them pass.
 - If a requirement is unclear, ask instead of assuming.
 - Pin devDependency versions compatible with Node 24 and the planned tooling (ts-jest needs TypeScript below 7). Check peer dependencies before installing the latest major.
+- Never run `npm audit fix --force`. It can downgrade packages by several majors (it tried to install Jest 25). Use `npm audit --omit=dev` to see what reaches production; dev-tooling advisories are documented, not force-fixed.
+- Run `npm test` after every change that touches server code. Tests need `TEST_DATABASE_URL` pointing at a database whose name ends in `_test`.
 
 ## Code conventions
 
@@ -40,6 +42,13 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - Every authentication failure returns the same 401 `UNAUTHORIZED` message. Login returns the same 401 `INVALID_CREDENTIALS` for unknown email and wrong password, and always runs a bcrypt compare (dummy hash at the same cost).
 - Bcrypt cost comes from `BCRYPT_COST` everywhere, including the seed.
 - Error mapping for database errors reads `err.meta.driverAdapterError.cause` (Prisma 7 + adapter-pg). Don't match on Prisma's `err.code` for 23P01.
+- TypeScript 6 doesn't auto-include `@types/*`. `tsconfig.json` lists `types` explicitly (`node`, `jest`); `tsconfig.build.json` excludes tests and Jest types from production builds.
+- Test setup (`src/test/`) must refuse to run unless the database name ends in `_test`, and must never print the connection URL.
+- Booking time rules live in `src/bookings/rules.ts`. Time-dependent checks take `now` as a parameter so tests control the clock. Static shape rules live in Zod schemas.
+- When one Zod field has dependent checks (range, then step), chain them with `.pipe()` so the client gets one error message per field, not stacked ones.
+- Query and params validation uses `validateQuery` / `validateParams` (Express 5 `req.query` is read-only). Never assign to `req.query`.
+- Booking creation must lock the Table row with `SELECT ... FOR UPDATE`. A concurrency test must prove losers are rejected by the app check, not by the exclusion constraint.
+- Never use `--forceExit` to silence Jest's open-handle warning; find the root cause. Timers raced in tests must be cleared. Every concurrency test needs a mutation check proving it fails when the lock is removed.
 
 ## Environment
 
@@ -54,4 +63,9 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 
 ## Commands
 
-<!-- Filled in as the project grows -->
+- `npm run dev`: start the dev server (restart manually after editing `.env`)
+- `npm test`: Jest, runs in band against `booking_test`
+- `npm run test:db:migrate`: apply migrations to the test database
+- `npm run typecheck`: `tsc --noEmit`
+- `npm run build`: `prisma generate` + compile with `tsconfig.build.json`
+- `npm run db:generate` / `db:seed`: Prisma client / seed data

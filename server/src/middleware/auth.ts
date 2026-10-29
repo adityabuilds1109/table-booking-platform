@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import type { Request, RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import { AppError } from '../errors';
@@ -36,6 +36,15 @@ export const authenticate: RequestHandler = async (req, _res, next) => {
   req.user = user;
   next();
 };
+
+// For handlers mounted behind `authenticate`. req.user is optional in its type (it is unset on public routes),
+// so this narrows it once instead of every handler repeating the check. The 401 only fires if the middleware is missing.
+export function currentUser(req: Request): NonNullable<Request['user']> {
+  if (!req.user) {
+    throw unauthorized();
+  }
+  return req.user;
+}
 
 // Use after `authenticate`. The 401 branch only fires if that order is ever broken.
 export const requireAdmin: RequestHandler = (req, _res, next) => {
