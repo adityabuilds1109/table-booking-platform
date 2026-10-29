@@ -10,7 +10,8 @@
     "dev": "vite",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "build": "npm run typecheck && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:schema-parity": "node ../server/node_modules/tsx/dist/cli.mjs scripts/check-schema-parity.ts"
   },
   "dependencies": {
     "react": "19.3.1",
