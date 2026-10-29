@@ -4,6 +4,7 @@ import app from '../app';
 import { MS_PER_MINUTE } from '../bookings/rules';
 import { createBooking, createTable, createUser } from '../test/factories';
 import { disconnectDatabase, resetDatabase } from '../test/db';
+import { utcDateAt } from '../test/slots';
 
 const availabilityResponseSchema = z.object({
   tables: z.array(z.object({ id: z.string(), name: z.string(), capacity: z.number() })),
@@ -14,11 +15,6 @@ const availabilityResponseSchema = z.object({
 const DAYS_AHEAD = 7;
 const REQUEST_START_HOUR = 19;
 const REQUEST_MINUTES = 90;
-
-function utcDateAt(daysAhead: number, hour: number, minute = 0): Date {
-  const today = new Date();
-  return new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + daysAhead, hour, minute));
-}
 
 const requestStart = utcDateAt(DAYS_AHEAD, REQUEST_START_HOUR);
 

@@ -1,6 +1,12 @@
 import { randomUUID } from 'node:crypto';
-import type { BookingStatus } from '../generated/prisma/client';
+import { signToken } from '../auth/token';
+import type { BookingStatus, Role } from '../generated/prisma/client';
 import { prisma } from '../lib/prisma';
+
+// ['Authorization', 'Bearer <jwt>'] for supertest's `.set(...)`, signed like a real login would.
+export function authHeaderFor(user: { id: string; role: Role }): [string, string] {
+  return ['Authorization', `Bearer ${signToken(user)}`];
+}
 
 // Rows inserted straight through Prisma, for arranging test data without going through the API.
 
