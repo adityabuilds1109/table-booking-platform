@@ -154,3 +154,12 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **Task:** Trust the new tests.
 - **What happened:** Swapping `z.iso.date()` for a regex failed exactly the 5 impossible-date tests; flipping `<` to `<=` failed exactly the boundary test; letting `authenticate` accept HS512 failed exactly 1 test.
 - **Lesson:** A passing test only means something once I've seen it fail when the code is wrong. Not a mistake by Claude Code; evidence of my verification habit.
+
+### 2026-10-29 — Concurrency block test passed without the lock
+
+- **Task:** Prove `SELECT ... FOR UPDATE` serializes bookings.
+- **What Claude Code did:** Wrote a block test where a separate transaction held `FOR UPDATE` on the table row.
+- **What was wrong:** The test still passed after removing `FOR UPDATE` from `createBooking`. Inserting a booking takes a `FOR KEY SHARE` lock on the Table row through the foreign key, which conflicts with `FOR UPDATE`, so the insert waited anyway.
+- **How I caught it:** The mutation check: remove the lock and see which tests fail.
+- **Fix:** Test holder changed to `FOR NO KEY UPDATE`, which doesn't conflict with the foreign-key lock but does conflict with `FOR UPDATE`. After the fix, 3 of 4 tests fail without the lock.
+- **Lesson → CLAUDE.md change?:** Yes. Add: "Every concurrency test needs a mutation check proving it fails when the lock is removed."

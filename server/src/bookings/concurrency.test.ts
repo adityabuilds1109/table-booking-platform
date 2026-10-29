@@ -33,6 +33,25 @@ function sleep(ms: number): Promise<void> {
   return new Promise((done) => setTimeout(done, ms));
 }
 
+// Reports whether `promise` settles (resolves or rejects) within `ms`. The timer is cleared as soon as the race is
+// decided: an uncleared setTimeout keeps Node alive until it fires, which is what made Jest print "did not exit one
+// second after the test run has completed" when the booking finished first.
+async function settlesWithin(promise: Promise<unknown>, ms: number): Promise<'settled' | 'timed out'> {
+  let timer: NodeJS.Timeout | undefined;
+  const timedOut = new Promise<'timed out'>((resolve) => {
+    timer = setTimeout(() => resolve('timed out'), ms);
+  });
+  const settled = promise.then(
+    () => 'settled' as const,
+    () => 'settled' as const,
+  );
+  try {
+    return await Promise.race([settled, timedOut]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 // Opens a transaction that locks the table row and holds it until `release()` is called: a stand-in for a
 // slow in-flight booking, so tests can observe what a competing request does while the lock is held.
 //
@@ -136,15 +155,14 @@ describe('booking concurrency', () => {
     await holder.lockHeld;
 
     // Act
-    const outcome = await Promise.race([
-      createBooking(bookingInput(otherTable.id), user.id).then(() => 'booked' as const),
-      sleep(2000).then(() => 'blocked' as const),
-    ]);
+    const pending = createBooking(bookingInput(otherTable.id), user.id);
+    const outcome = await settlesWithin(pending, 2000);
     holder.release();
     await holder.finished;
 
-    // Assert
-    expect(outcome).toBe('booked');
+    // Assert: it finished while the other table was still locked, and it really created the booking.
+    expect(outcome).toBe('settled');
+    expect((await pending).tableId).toBe(otherTable.id);
   });
 
   it('lets the waiting request fail with SLOT_TAKEN once the lock holder commits a conflicting booking', async () => {
