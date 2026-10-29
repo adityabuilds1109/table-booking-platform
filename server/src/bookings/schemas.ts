@@ -68,3 +68,5 @@ export const createBookingSchema = z.object({
 
 export type AvailabilityQuery = z.output<typeof availabilityQuerySchema>;
 export type CreateBookingInput = z.output<typeof createBookingSchema>;
+
+export const bookingIdParamsSchema = z.object({ id: z.uuid() });

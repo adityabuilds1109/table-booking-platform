@@ -172,3 +172,12 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** Ran the file myself and saw the warning. Claude Code isolated it by running each test alone.
 - **Fix:** `settlesWithin(promise, ms)` helper that clears its timer in `finally`. No `--forceExit`.
 - **Lesson → CLAUDE.md change?:** Yes.
+
+### 2026-10-29 — Pagination tie-breaker test passed without the tie-breaker
+
+- **Task:** GET /bookings/me with pagination.
+- **What Claude Code did:** Added `id` as a tie-breaker in the ordering and wrote a "no repeats, no gaps" test.
+- **What was wrong:** With the tie-breaker removed the test still passed, because Postgres returned ties in insertion order on a small table.
+- **How I caught it:** Mutation check (remove the tie-breaker, see what fails). Nothing did.
+- **Fix:** Test now asserts ties are sorted by id; fails 10 of 10 runs without the tie-breaker.
+- **Lesson → CLAUDE.md change?:** No (covered by the mutation-check rule).

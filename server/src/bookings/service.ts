@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { AppError } from '../errors';
-import type { Booking, Prisma } from '../generated/prisma/client';
+import type { Booking, Prisma, Role } from '../generated/prisma/client';
 import { toPage, toSkipTake, type Page, type PaginationQuery } from '../lib/pagination';
 import { prisma } from '../lib/prisma';
 import { assertBookable, endsAtFor } from './rules';
@@ -124,4 +124,32 @@ export async function listMyBookings(userId: string, pagination: PaginationQuery
   );
 
   return toPage(data, total, pagination);
+}
+
+// Who is asking to cancel. Comes from `authenticate`, so the role is the one in the database, not the token.
+export type Actor = { id: string; role: Role };
+
+// Cancels a booking. The owner or an admin may do it; everyone else gets 403.
+//
+// Check order matters. Existence and ownership come first, so a stranger learns nothing about a booking's status.
+// Then "already cancelled" returns the booking unchanged (idempotent: repeating the request, or a retry after a
+// network error, is harmless). Only then the "already started" rule, so an old cancelled booking still answers 200.
+// The slot frees itself: the booking_no_overlap constraint and the availability query both ignore CANCELLED rows.
+export async function cancelBooking(bookingId: string, actor: Actor, now: Date = new Date()): Promise<Booking> {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+  if (!booking) {
+    throw new AppError(404, 'NOT_FOUND', 'Booking not found');
+  }
+  if (booking.userId !== actor.id && actor.role !== 'ADMIN') {
+    throw new AppError(403, 'FORBIDDEN', 'You can only cancel your own bookings');
+  }
+  if (booking.status === 'CANCELLED') {
+    return booking;
+  }
+  if (booking.startsAt.getTime() <= now.getTime()) {
+    throw new AppError(409, 'BOOKING_STARTED', 'A booking that has already started cannot be cancelled');
+  }
+
+  // Safe without a lock: CONFIRMED -> CANCELLED is the only transition, and two concurrent cancels end in the same state.
+  return prisma.booking.update({ where: { id: bookingId }, data: { status: 'CANCELLED' } });
 }

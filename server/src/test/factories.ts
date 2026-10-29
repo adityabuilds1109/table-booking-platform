@@ -10,10 +10,10 @@ export function authHeaderFor(user: { id: string; role: Role }): [string, string
 
 // Rows inserted straight through Prisma, for arranging test data without going through the API.
 
-export function createUser() {
+export function createUser({ role = 'USER' }: { role?: Role } = {}) {
   // The hash is never checked in these tests, so it doesn't need to be a real bcrypt hash.
   return prisma.user.create({
-    data: { email: `${randomUUID()}@example.com`, passwordHash: 'not-a-real-hash', name: 'Test User' },
+    data: { email: `${randomUUID()}@example.com`, passwordHash: 'not-a-real-hash', name: 'Test User', role },
   });
 }
 

@@ -1,10 +1,10 @@
 import { AppError } from '../errors';
 import { prisma } from '../lib/prisma';
 import { disconnectDatabase, resetDatabase } from '../test/db';
-import { createTable, createUser } from '../test/factories';
+import { createBooking as insertBooking, createTable, createUser } from '../test/factories';
 import { utcDateAt } from '../test/slots';
 import { BOOKING_RULES, MS_PER_MINUTE } from './rules';
-import { createBooking } from './service';
+import { cancelBooking, createBooking } from './service';
 
 const startsAt = utcDateAt(7, 19);
 
@@ -58,5 +58,36 @@ describe('createBooking time rules (injected clock)', () => {
     );
 
     await expect(attempt).rejects.toMatchObject({ code: 'BOOKING_TIME_INVALID' });
+  });
+});
+
+// Same idea as above: the HTTP tests use the real clock, so the exact "has it started" boundary is pinned here.
+describe('cancelBooking started boundary (injected clock)', () => {
+  async function arrangeBooking() {
+    const user = await createUser();
+    const table = await createTable({ capacity: 4 });
+    const booking = await insertBooking({
+      userId: user.id,
+      tableId: table.id,
+      startsAt,
+      endsAt: new Date(startsAt.getTime() + 60 * MS_PER_MINUTE),
+    });
+    return { user, booking };
+  }
+
+  it('allows cancelling one millisecond before the start', async () => {
+    const { user, booking } = await arrangeBooking();
+
+    const cancelled = await cancelBooking(booking.id, user, new Date(startsAt.getTime() - 1));
+
+    expect(cancelled.status).toBe('CANCELLED');
+  });
+
+  it('rejects cancelling at the exact start instant', async () => {
+    const { user, booking } = await arrangeBooking();
+
+    const attempt = cancelBooking(booking.id, user, startsAt);
+
+    await expect(attempt).rejects.toMatchObject({ status: 409, code: 'BOOKING_STARTED' });
   });
 });
