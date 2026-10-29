@@ -15,3 +15,5 @@ process.env.JWT_SECRET = 'test-only-jwt-secret-at-least-32-characters-long';
 process.env.JWT_EXPIRES_IN = '1h';
 // Lowest allowed cost: bcrypt is deliberately slow, and tests hash a lot.
 process.env.BCRYPT_COST = '4';
+// Fixed so the CORS tests don't depend on a developer's .env. The stray space on purpose: the parser must trim it.
+process.env.CORS_ORIGINS = 'https://app.example.test, http://localhost:5173';
