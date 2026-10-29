@@ -69,3 +69,5 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - `npm run typecheck`: `tsc --noEmit`
 - `npm run build`: `prisma generate` + compile with `tsconfig.build.json`
 - `npm run db:generate` / `db:seed`: Prisma client / seed data
+- Client (in `client/`): `npm run dev` (port 5173, strictPort), `npm run typecheck`, `npm run build`. Needs `client/.env` with `VITE_API_URL`.
+- Run server and client in separate terminals; never start a second dev server on the same port.

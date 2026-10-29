@@ -84,3 +84,19 @@ npm run build
 ```
 
 The client has no automated tests yet.
+
+### Checking that the client's form rules match the server's
+
+The sign-in and registration forms validate in the browser with the same rules as the API (`client/src/auth/credentialSchemas.ts` and `server/src/auth/schemas.ts`). The two files are separate, so after changing validation on either side, run:
+
+```
+cd client
+npm run check:schema-parity
+```
+
+It feeds about 51,000 inputs through both (length and byte-length boundaries, Unicode, whitespace, wrong types, plus seeded random ones) and compares whether each is accepted or rejected, which fields fail, and the cleaned-up values that would be sent. It exits with an error if they disagree. This is a manual check, not part of CI. It adds no dependency: it runs through the `tsx` that `server/` already has installed, so run `npm ci` in `server/` as well as `client/` first.
+
+## Known limitations
+
+- **No rate limiting.** `POST /auth/login` and `POST /auth/register` accept unlimited attempts, so online password guessing and credential stuffing are not slowed down. Passwords are bcrypt-hashed and login failures are deliberately generic, but a limiter (per IP and per account) or a reverse proxy in front of the API is needed before this is used for real.
+- **Registering reveals whether an email already has an account.** An existing address gets `409 EMAIL_TAKEN`, and the form says so, so people get a clear message. Login does not leak this (an unknown email and a wrong password give the same error). Closing the gap on registration would need an email-confirmation flow.
