@@ -112,3 +112,45 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** The error named the path it tried to open.
 - **Fix:** Use `docker compose ...` from the repo root; check `pwd` first.
 - **Lesson → CLAUDE.md change?:** Yes. Added the path rule.
+
+### 2026-10-29 — Audit report named the wrong package
+
+- **Task:** Add Jest and supertest.
+- **What Claude Code did:** Reported "1 high vulnerability in deepmerge" from the full audit.
+- **What was wrong:** `npm audit --omit=dev` showed the real production issue: `body-parser` (DoS via compressed body). `deepmerge` only came in through Jest's dev tooling. Both were true for different scopes.
+- **How I caught it:** Ran the production-only audit myself and a `--dry-run` of the fix.
+- **Fix:** `npm audit fix` updated only `body-parser` to 2.4.0. I refused `--force`, which would have installed Jest 25.
+- **Lesson → CLAUDE.md change?:** Yes. Never use `--force`; check `--omit=dev`.
+
+### 2026-10-29 — TypeScript 6 stopped auto-including @types
+
+- **Task:** Type-check the new Jest tests.
+- **What Claude Code did:** First `tsc` run failed with `Cannot find name 'describe'`.
+- **What was wrong:** TS 6 no longer loads `@types/*` automatically.
+- **How I caught it:** Compiler error; it confirmed with `tsc --types node,jest`.
+- **Fix:** Explicit `types` in tsconfig, plus `tsconfig.build.json` so tests and Jest types stay out of production.
+- **Lesson → CLAUDE.md change?:** Yes.
+
+### 2026-10-29 — Tests failed because the variable lived only in Claude Code's shell
+
+- **Task:** Run the new suite on my own machine.
+- **What happened:** `npm test` failed with "TEST_DATABASE_URL is not set".
+- **What was wrong:** Claude Code had set it only in its own shell, so nothing in `.env` had it.
+- **How I caught it:** Ran the tests myself rather than trusting the report.
+- **Fix:** Added the variable to `server/.env`. The `_test` guard did its job.
+- **Lesson → CLAUDE.md change?:** Yes (Commands section).
+
+### 2026-10-29 — Schema returned two messages for one bad field
+
+- **Task:** Booking rules and schemas with unit tests.
+- **What Claude Code did:** Wrote checks for duration range and 15-minute step as separate refinements.
+- **What was wrong:** `durationMinutes: 241` failed both, so clients got two joined messages for one field.
+- **How I caught it:** Seven tests failed on the first run. It fixed the schema, not the tests.
+- **Fix:** Dependent check moved behind `.pipe()`; tests assert one message per field.
+- **Lesson → CLAUDE.md change?:** Yes.
+
+### 2026-10-29 — Mutation checks showed the tests can fail
+
+- **Task:** Trust the new tests.
+- **What happened:** Swapping `z.iso.date()` for a regex failed exactly the 5 impossible-date tests; flipping `<` to `<=` failed exactly the boundary test; letting `authenticate` accept HS512 failed exactly 1 test.
+- **Lesson:** A passing test only means something once I've seen it fail when the code is wrong. Not a mistake by Claude Code; evidence of my verification habit.
