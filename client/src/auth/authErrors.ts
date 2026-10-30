@@ -20,7 +20,9 @@ const GENERIC = 'Something went wrong. Please try again.';
 // The server reports validation failures as one string: "email: <message>; password: <message>". The messages are
 // technical ("Too small: expected string to have >=1 characters"), so they are never shown; only which fields were
 // named is used. This can only happen if the client's rules drifted from the server's (see check:schema-parity).
-const AUTH_FIELDS: readonly AuthField[] = ['email', 'password', 'name'];
+// The order is the order the fields appear on the Register page (the Login page simply has no name field), because the
+// first one in this list is where keyboard focus goes: it must be the first problem a person meets, reading top to bottom.
+const AUTH_FIELDS: readonly AuthField[] = ['name', 'email', 'password'];
 
 function fieldsNamedIn(serverMessage: string): AuthField[] {
   const named = serverMessage.split('; ').map((part) => part.split(': ', 1)[0]);

@@ -8,7 +8,7 @@ A restaurant table booking system with availability search, double-booking preve
 
 🚧 Work in progress
 
-**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout and login handling; the login, register, search and bookings *pages* are still placeholders. The admin endpoints are not built yet.
+**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout, and working login and registration pages (with form validation that mirrors the server's rules); the availability search and "my bookings" *pages* are still placeholders. The admin endpoints are not built yet.
 
 ## Running it locally
 
