@@ -189,3 +189,11 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **What was wrong:** The failure was a compile error (TypeScript could no longer narrow `null`), not a failing test.
 - **How I caught it:** It reported the compile error and redid the mutation in a form that compiles. 3 tests then failed on behavior.
 - **Lesson:** Check that a mutation fails on assertions, not on compilation.
+
+### 2026-10-29 — Origin schema accepted a wildcard hostname
+
+- **Task:** CORS_ORIGINS config.
+- **What was wrong:** The URL parser accepted `https://*.example.com`, which `cors` would never match (exact strings), so it looked configured but did nothing.
+- **How I caught it:** A test Claude Code wrote.
+- **Fix:** Schema rejects `*` anywhere. Tests not changed.
+- **Lesson:** Validate config shape strictly, not just "parses as URL".
