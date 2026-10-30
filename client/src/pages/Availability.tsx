@@ -1,11 +1,16 @@
-import { useMemo, useRef, useState, type FormEvent } from 'react';
-import { useSearchParams } from 'react-router';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { loginStateFor } from '../auth/loginRedirect';
+import { useAuth } from '../auth/useAuth';
 import SelectField, { type SelectOption } from '../components/SelectField';
 import TextField from '../components/TextField';
+import BookingConfirmation from '../booking/BookingConfirmation';
+import { useBookTable } from '../booking/useBookTable';
 import AvailabilityResults, { type SearchSummary } from '../booking/AvailabilityResults';
 import { BOOKING_LIMITS, DURATION_VALUES, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../booking/bookingLimits';
 import { readSearchParams, toSearchParams, type SearchValues } from '../booking/searchParams';
 import { validateSearch, type SearchErrors } from '../booking/searchValidation';
+import type { AvailableTable } from '../api/schemas';
 import { addLocalDays, describeDeviceTimeZone, formatStartTimeLabel, localDateString, zoneAbbreviation } from '../booking/timeConversion';
 import { useAvailability } from '../booking/useAvailability';
 
@@ -19,6 +24,9 @@ const PARTY_OPTIONS: readonly SelectOption[] = PARTY_SIZE_VALUES.map((value) => 
 
 export default function Availability() {
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { state: auth } = useAuth();
   const urlKey = params.toString();
 
   // The URL is the source of truth for what was SEARCHED (so reload, Back and returning from login work); `values` is what
@@ -31,14 +39,7 @@ export default function Availability() {
   const [values, setValues] = useState<SearchValues>(fromUrl.values);
   // False until the first submit attempt (or a URL whose search is invalid), so nobody is told "Choose a date" before trying.
   const [submitted, setSubmitted] = useState(fromUrl.validation?.ok === false);
-  // When the URL changes (Back/Forward, a link), the form follows it: "adjusting state while rendering", React's pattern
-  // for state that derives from something else.
   const [syncedKey, setSyncedKey] = useState(urlKey);
-  if (syncedKey !== urlKey) {
-    setSyncedKey(urlKey);
-    setValues(fromUrl.values);
-    setSubmitted(fromUrl.validation?.ok === false);
-  }
 
   const refs = {
     date: useRef<HTMLInputElement>(null),
@@ -49,6 +50,16 @@ export default function Availability() {
 
   const search = fromUrl.validation?.ok ? fromUrl.validation.search : null;
   const { state, reload } = useAvailability(search?.query ?? null);
+  const booking = useBookTable(search, reload);
+
+  // When the URL changes (Back/Forward, a link), the form follows it: "adjusting state while rendering", React's pattern
+  // for state that derives from something else.
+  if (syncedKey !== urlKey) {
+    setSyncedKey(urlKey);
+    setValues(fromUrl.values);
+    setSubmitted(fromUrl.validation?.ok === false);
+    booking.reset();
+  }
 
   const validation = validateSearch(values);
   const errors: SearchErrors = submitted && !validation.ok ? validation.errors : {};
@@ -69,6 +80,24 @@ export default function Availability() {
     else setParams(next);
   }
 
+  // The message after a failed booking gets focus, so it is read out and a keyboard user is not left on a vanished button.
+  const messageRef = useRef<HTMLParagraphElement>(null);
+  const failedMessage = booking.state.phase === 'failed' ? booking.state.message : null;
+  useEffect(() => {
+    if (failedMessage !== null) messageRef.current?.focus();
+  }, [failedMessage]);
+
+  function handleBook(table: AvailableTable) {
+    // Anonymous: nothing is sent. They go to /login and come back to this same search (the URL is remembered).
+    if (auth.status === 'anonymous') {
+      void navigate('/login', { state: loginStateFor(location) });
+      return;
+    }
+    if (auth.status === 'authenticated') void booking.book(table);
+    else booking.fail("We couldn't check that you are logged in. Please try again in a moment.");
+  }
+
+  const pending = booking.state.phase === 'pending' ? booking.state : null;
   const now = new Date();
   const summary: SearchSummary | null =
     search === null
@@ -138,7 +167,36 @@ export default function Availability() {
         </button>
       </form>
 
-      <AvailabilityResults state={state} summary={summary} onRetry={reload} />
+      {/* Always in the page (empty until needed), like the results status: alerts put into an existing region are announced reliably. */}
+      <div role="alert" className="mt-4">
+        {failedMessage !== null && (
+          <p ref={messageRef} tabIndex={-1} className="rounded border border-red-200 bg-red-50 p-3 text-red-800">
+            {failedMessage}
+          </p>
+        )}
+      </div>
+      {auth.status === 'loading' && <p className="mt-2 text-sm text-slate-700">Checking your login…</p>}
+
+      {booking.state.phase === 'booked' ? (
+        <BookingConfirmation
+          booking={booking.state.booking}
+          tableName={booking.state.tableName}
+          onSearchAgain={() => {
+            booking.reset();
+            reload();
+          }}
+        />
+      ) : (
+        <AvailabilityResults
+          state={state}
+          summary={summary}
+          onRetry={reload}
+          onBook={handleBook}
+          bookingTableId={pending?.tableId ?? null}
+          bookingTableName={pending?.tableName ?? null}
+          bookDisabled={auth.status === 'loading'}
+        />
+      )}
     </section>
   );
 }
