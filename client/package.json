@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
-    "check:schema-parity": "node ../server/node_modules/tsx/dist/cli.mjs scripts/check-schema-parity.ts"
+    "check:schema-parity": "node ../server/node_modules/tsx/dist/cli.mjs scripts/check-schema-parity.ts",
+    "check:time-conversion": "node ../server/node_modules/tsx/dist/cli.mjs scripts/check-time-conversion.ts"
   },
   "dependencies": {
     "react": "19.3.1",

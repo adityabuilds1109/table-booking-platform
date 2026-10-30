@@ -3,7 +3,7 @@ import { useId, type ReactNode, type Ref } from 'react';
 type TextFieldProps = {
   label: string;
   name: string;
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password' | 'date';
   value: string;
   onChange: (value: string) => void;
   autoComplete: string;
@@ -15,6 +15,10 @@ type TextFieldProps = {
   // screen readers too, because it sits inside the same element the input's aria-describedby points to.
   errorAction?: ReactNode;
   autoCapitalize?: 'none' | 'words';
+  // Only meaningful for type="date" (YYYY-MM-DD): the browser's picker greys out days outside the range. It is a convenience;
+  // the page still validates the value itself, because typing can bypass it.
+  min?: string;
+  max?: string;
   // React 19 passes `ref` to function components as a normal prop.
   ref?: Ref<HTMLInputElement>;
 };
@@ -34,6 +38,8 @@ export default function TextField({
   error,
   errorAction,
   autoCapitalize,
+  min,
+  max,
   ref,
 }: TextFieldProps) {
   // useId gives each field instance a unique, stable id, so two fields on a page can never share one.
@@ -55,6 +61,8 @@ export default function TextField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         required
+        min={min}
+        max={max}
         autoComplete={autoComplete}
         autoCapitalize={autoCapitalize}
         spellCheck={type === 'text' ? undefined : false}

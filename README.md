@@ -8,7 +8,7 @@ A restaurant table booking system with availability search, double-booking preve
 
 🚧 Work in progress
 
-**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout, and working login and registration pages (with form validation that mirrors the server's rules); the availability search and "my bookings" *pages* are still placeholders. The admin endpoints are not built yet.
+**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout, and working login and registration pages (with form validation that mirrors the server's rules), and the home page where you search for free tables and book one; the "my bookings" *page* is still a placeholder. The admin endpoints are not built yet.
 
 ## Running it locally
 
@@ -96,7 +96,19 @@ npm run check:schema-parity
 
 It feeds about 51,000 inputs through both (length and byte-length boundaries, Unicode, whitespace, wrong types, plus seeded random ones) and compares whether each is accepted or rejected, which fields fail, and the cleaned-up values that would be sent. It exits with an error if they disagree. This is a manual check, not part of CI. It adds no dependency: it runs through the `tsx` that `server/` already has installed, so run `npm ci` in `server/` as well as `client/` first.
 
+### Checking the local-time to UTC conversion
+
+The booking pages convert a local date and time to the UTC the API expects (and back). Time zones and clock changes make that easy to get subtly wrong, so this check proves it rather than trusting a few examples. After changing anything in `client/src/booking/` or the server's booking rules, run:
+
+```
+cd client
+npm run check:time-conversion
+```
+
+For about 15 time zones (half-hour and 45-minute offsets such as Kolkata and Kathmandu, daylight saving in both hemispheres, the +14 zone, Samoa's skipped day) it converts **every 15-minute slot of a whole year** and compares each result with an independent calculation made with `Intl`. It also checks that every converted slot is accepted by the server's own validation, that times skipped or repeated by clock changes are detected, and that the client's booking limits and option lists equal the server's. It exits with an error on any difference. Like the parity check it is manual, is not part of CI, adds no dependency, and needs `npm ci` to have been run in `server/` too. It takes a few seconds.
+
 ## Known limitations
 
+- **Times use the device's time zone, not the restaurant's.** The API works entirely in UTC and has no idea where the restaurant is. The search and booking pages turn the date and time a person picks into UTC using the time zone of *their device*, and show times back in that same zone (always with its name, for example "19:00 CET"). Someone searching from a different time zone than the restaurant's, such as a traveller or a laptop set to the wrong zone, will therefore book the wrong local time. The proper fix is a restaurant time-zone setting on the server, with times entered and shown in that zone.
 - **No rate limiting.** `POST /auth/login` and `POST /auth/register` accept unlimited attempts, so online password guessing and credential stuffing are not slowed down. Passwords are bcrypt-hashed and login failures are deliberately generic, but a limiter (per IP and per account) or a reverse proxy in front of the API is needed before this is used for real.
 - **Registering reveals whether an email already has an account.** An existing address gets `409 EMAIL_TAKEN`, and the form says so, so people get a clear message. Login does not leak this (an unknown email and a wrong password give the same error). Closing the gap on registration would need an email-confirmation flow.
