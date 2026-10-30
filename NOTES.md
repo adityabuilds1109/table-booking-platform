@@ -197,3 +197,11 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** A test Claude Code wrote.
 - **Fix:** Schema rejects `*` anywhere. Tests not changed.
 - **Lesson:** Validate config shape strictly, not just "parses as URL".
+
+### 2026-10-30 — Mapper focused the wrong field
+
+- **Task:** Register page.
+- **What was wrong:** For a server error naming both name and email, the mapper focused Email while Name is first on the page.
+- **How I caught it:** A stubbed VALIDATION_ERROR check in the browser suite.
+- **Fix:** One-line field ordering fix in the mapper.
+- **Lesson:** Test focus order, not just that an error appears.
