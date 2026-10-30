@@ -47,3 +47,30 @@ export function describeSearchError(error: ApiError): { message: string; retryab
       return { message: GENERIC, retryable: true };
   }
 }
+
+// What to tell a person whose "Cancel" click failed. `reloadList`: the list on screen may be out of date, so load it again.
+// (A cancel that finds the booking ALREADY cancelled is not an error: the server answers 200 and the row simply shows it.)
+export function describeCancelError(error: ApiError): { message: string; reloadList: boolean } {
+  switch (error.code) {
+    case 'BOOKING_STARTED':
+      return { message: "That booking has already started, so it can't be cancelled.", reloadList: true };
+    case 'NOT_FOUND':
+      return { message: "We couldn't find that booking. Showing your current bookings.", reloadList: true };
+    case 'FORBIDDEN':
+      return { message: "That booking isn't yours to cancel. Showing your current bookings.", reloadList: true };
+    case 'UNAUTHORIZED':
+      // The app has already ended the session and is sending the person to the login page; this is only a fallback.
+      return { message: 'Please log in to manage your bookings.', reloadList: false };
+    case 'NETWORK_ERROR':
+      return { message: NETWORK, reloadList: false };
+    default:
+      return { message: GENERIC, reloadList: false };
+  }
+}
+
+// What to tell a person whose list could not be loaded. `retryable`: show a "Try again" button.
+export function describeListError(error: ApiError): { message: string; retryable: boolean } {
+  return error.code === 'NETWORK_ERROR'
+    ? { message: NETWORK, retryable: true }
+    : { message: "We couldn't load your bookings. Please try again.", retryable: true };
+}

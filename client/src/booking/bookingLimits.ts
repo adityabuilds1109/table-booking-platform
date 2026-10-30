@@ -13,6 +13,11 @@ export const BOOKING_LIMITS = {
   maxAdvanceDays: 90,
 } as const;
 
+// "My bookings": how many rows per page (a client choice; the server allows up to 100) and the highest page number the
+// server accepts (server/src/lib/pagination.ts). The check script compares the second with the server's own schema.
+export const MY_BOOKINGS_PAGE_SIZE = 10;
+export const MAX_PAGE_NUMBER = 100_000;
+
 const range = (from: number, to: number, step: number): number[] =>
   Array.from({ length: Math.floor((to - from) / step) + 1 }, (_, index) => from + index * step);
 
