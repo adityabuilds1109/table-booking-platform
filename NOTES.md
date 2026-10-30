@@ -205,3 +205,9 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **How I caught it:** A stubbed VALIDATION_ERROR check in the browser suite.
 - **Fix:** One-line field ordering fix in the mapper.
 - **Lesson:** Test focus order, not just that an error appears.
+
+### 2026-10-30 — Removing the abort made unrelated checks fail
+
+- **Task:** Search with AbortSignal.
+- **What happened:** The no-abort mutation failed 10 checks, including conversion checks, because each page load then sent two live requests.
+- **Lesson:** A mutation can fail more than its target. I read which checks failed and why, not just that something failed.
