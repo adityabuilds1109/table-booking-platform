@@ -16,7 +16,7 @@
 import { ApiError } from '../src/api/client';
 import { describeBookingError, describeCancelError, describeListError, describeSearchError } from '../src/booking/bookingErrors';
 import { BOOKING_LIMITS, DURATION_VALUES, MAX_PAGE_NUMBER, MY_BOOKINGS_PAGE_SIZE, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../src/booking/bookingLimits';
-import { describeBookingStatus, describeListPage, pageSearch, readPageParam } from '../src/booking/myBookings';
+import { describeBookingStatus, describeListPage, pageSearch, readPageParam, replaceBooking } from '../src/booking/myBookings';
 import { defaultSearchValues, readSearchParams, toSearchParams } from '../src/booking/searchParams';
 import { validateSearch } from '../src/booking/searchValidation';
 import {
@@ -269,6 +269,12 @@ check('cancelled -> "Cancelled", never cancellable, whether in the future or the
 const summary = (total: number, pageNumber: number, shown: number) => describeListPage({ page: pageNumber, pageSize: 10, total, shown });
 check('summary: no bookings, one booking, a full page, a last partial page, a page past the end', summary(0, 1, 0) === 'You have no bookings yet.' && summary(1, 1, 1) === '1 booking.' && summary(25, 2, 10) === '25 bookings. Showing 11–20.' && summary(25, 3, 5) === '25 bookings. Showing 21–25.' && summary(25, 99, 0) === 'There are no bookings on this page.');
 check('summary: a page with a single row out of several says which one', summary(11, 2, 1) === '11 bookings. Showing 11.');
+
+const sampleRow = (id: string) => ({ id, tableId: 't', startsAt: '2026-11-03T18:00:00.000Z', endsAt: '2026-11-03T19:30:00.000Z', partySize: 2, status: 'CONFIRMED' as const, createdAt: '2026-10-01T00:00:00.000Z', table: { id: 't', name: 'T1' } });
+const loaded = { data: [sampleRow('a'), sampleRow('b')], page: 1, pageSize: 10, total: 2, totalPages: 1 };
+const replaced = replaceBooking(loaded, { id: 'b', status: 'CANCELLED' });
+check('replaceBooking changes only the named booking, keeps its other fields and the paging numbers', replaced.data[1]?.status === 'CANCELLED' && replaced.data[0]?.status === 'CONFIRMED' && replaced.data[1]?.table.name === 'T1' && replaced.total === 2 && replaced.data.length === 2);
+check('replaceBooking never modifies what it was given, and an unknown id changes nothing', loaded.data[1]?.status === 'CONFIRMED' && replaced !== loaded && JSON.stringify(replaceBooking(loaded, { id: 'zzz', status: 'CANCELLED' })) === JSON.stringify(loaded));
 
 const cancelOf = (code: string, message = 'SELECT * FROM "User" -- leaked server detail') => describeCancelError(new ApiError(409, code, message));
 check('BOOKING_STARTED, NOT_FOUND and FORBIDDEN reload the list; the other codes do not', ['BOOKING_STARTED', 'NOT_FOUND', 'FORBIDDEN'].every((c) => cancelOf(c).reloadList) && ['UNAUTHORIZED', 'NETWORK_ERROR', 'INTERNAL_ERROR', 'VALIDATION_ERROR', 'SOMETHING_NEW'].every((c) => !cancelOf(c).reloadList));

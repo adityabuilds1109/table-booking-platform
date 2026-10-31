@@ -1,3 +1,4 @@
+import type { MyBooking, MyBookingsPage } from '../api/schemas';
 import { MAX_PAGE_NUMBER } from './bookingLimits';
 
 const PAGE_SHAPE = /^[1-9]\d*$/;
@@ -38,4 +39,10 @@ export function describeListPage({ page, pageSize, total, shown }: { page: numbe
   if (total === 1) return '1 booking.';
   const range = shown === 1 ? `${first}` : `${first}–${first + shown - 1}`;
   return `${total} bookings. Showing ${range}.`;
+}
+
+// A copy of the loaded page in which one booking has changed (for example just cancelled), so the screen can show the
+// server's answer without asking for the whole list again. Nothing is modified in place; an unknown id changes nothing.
+export function replaceBooking(page: MyBookingsPage, updated: Pick<MyBooking, 'id' | 'status'>): MyBookingsPage {
+  return { ...page, data: page.data.map((booking) => (booking.id === updated.id ? { ...booking, status: updated.status } : booking)) };
 }
