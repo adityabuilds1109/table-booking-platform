@@ -14,8 +14,9 @@
 // by the server's own `availabilityQuerySchema` and describe the same instant.
 
 import { ApiError } from '../src/api/client';
-import { describeBookingError, describeSearchError } from '../src/booking/bookingErrors';
-import { BOOKING_LIMITS, DURATION_VALUES, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../src/booking/bookingLimits';
+import { describeBookingError, describeCancelError, describeListError, describeSearchError } from '../src/booking/bookingErrors';
+import { BOOKING_LIMITS, DURATION_VALUES, MAX_PAGE_NUMBER, MY_BOOKINGS_PAGE_SIZE, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../src/booking/bookingLimits';
+import { describeBookingStatus, describeListPage, pageSearch, readPageParam, replaceBooking } from '../src/booking/myBookings';
 import { defaultSearchValues, readSearchParams, toSearchParams } from '../src/booking/searchParams';
 import { validateSearch } from '../src/booking/searchValidation';
 import {
@@ -28,6 +29,7 @@ import {
 } from '../src/booking/timeConversion';
 import { BOOKING_RULES } from '../../server/src/bookings/rules';
 import { availabilityQuerySchema } from '../../server/src/bookings/schemas';
+import { paginationQuerySchema } from '../../server/src/lib/pagination';
 
 let passed = 0;
 const failures: string[] = [];
@@ -246,6 +248,40 @@ check('the capacity message names the party size', /party of 4/.test(describeBoo
 check('the time-not-bookable message quotes the real limits (60 minutes, 90 days)', /60 minutes/.test(describeBookingError(apiError('BOOKING_TIME_INVALID'), 2).message) && /90 days/.test(describeBookingError(apiError('BOOKING_TIME_INVALID'), 2).message));
 check('server wording is NEVER echoed, for any code', ['SLOT_TAKEN', 'TABLE_INACTIVE', 'NOT_FOUND', 'CAPACITY_EXCEEDED', 'BOOKING_TIME_INVALID', 'UNAUTHORIZED', 'NETWORK_ERROR', 'INTERNAL_ERROR', 'VALIDATION_ERROR', 'X'].every((c) => !/SELECT|leaked/.test(describeBookingError(apiError(c), 2).message + describeSearchError(apiError(c)).message)));
 check('search errors: network and unknown are retryable, a bad time and bad input are not', describeSearchError(apiError('NETWORK_ERROR')).retryable && describeSearchError(apiError('INTERNAL_ERROR')).retryable && !describeSearchError(apiError('BOOKING_TIME_INVALID')).retryable && !describeSearchError(apiError('VALIDATION_ERROR')).retryable);
+
+
+// ---------- 7. "My bookings": page number, status, summary, cancel errors ----------
+section('7. my bookings');
+const page = (query: string) => readPageParam(new URLSearchParams(query));
+check('the page limits equal the server pagination schema (page 100000 ok, 100001 refused, our page size ok)', paginationQuerySchema.safeParse({ page: String(MAX_PAGE_NUMBER), pageSize: String(MY_BOOKINGS_PAGE_SIZE) }).success && !paginationQuerySchema.safeParse({ page: String(MAX_PAGE_NUMBER + 1) }).success);
+check('?page=1, 2, 37 and the highest allowed page are read as they are', page('page=1') === 1 && page('page=2') === 2 && page('page=37') === 37 && page(`page=${MAX_PAGE_NUMBER}`) === MAX_PAGE_NUMBER);
+check('missing, empty, 0, negative, decimal, padded, exponent, spaced, text and too-large pages fall back to 1', ['', 'page=', 'page=0', 'page=-1', 'page=1.5', 'page=01', 'page=1e2', 'page=%202', 'page=abc', 'page=2abc', `page=${MAX_PAGE_NUMBER + 1}`, 'page=99999999999999999999', 'page=%2B2', 'page=0x10'].every((q) => page(q) === 1));
+check('every page this reads is one the server accepts', ['page=1', 'page=2', 'page=500', `page=${MAX_PAGE_NUMBER}`].every((q) => paginationQuerySchema.safeParse({ page: String(page(q)) }).success));
+check('with a repeated ?page=2&page=3 the first value is used (a defined, harmless choice)', page('page=2&page=3') === 2);
+check('page links: page 1 is the plain URL, others carry ?page=n', pageSearch(1) === '' && pageSearch(2) === '?page=2' && pageSearch(0) === '' && pageSearch(40) === '?page=40');
+
+const statusAt = (status: 'CONFIRMED' | 'CANCELLED', startsAt: string) => describeBookingStatus({ status, startsAt }, NOW);
+check('confirmed and in the future -> "Confirmed", cancellable', JSON.stringify(statusAt('CONFIRMED', '2026-10-30T12:00:00.001Z')) === JSON.stringify({ label: 'Confirmed', cancellable: true }));
+check('confirmed and starting exactly now -> "Past", not cancellable (the server refuses startsAt <= now)', JSON.stringify(statusAt('CONFIRMED', NOW.toISOString())) === JSON.stringify({ label: 'Past', cancellable: false }));
+check('confirmed and earlier -> "Past", not cancellable', JSON.stringify(statusAt('CONFIRMED', '2026-10-01T10:00:00.000Z')) === JSON.stringify({ label: 'Past', cancellable: false }));
+check('cancelled -> "Cancelled", never cancellable, whether in the future or the past', JSON.stringify(statusAt('CANCELLED', '2027-01-01T10:00:00.000Z')) === JSON.stringify({ label: 'Cancelled', cancellable: false }) && !statusAt('CANCELLED', '2026-01-01T10:00:00.000Z').cancellable);
+
+const summary = (total: number, pageNumber: number, shown: number) => describeListPage({ page: pageNumber, pageSize: 10, total, shown });
+check('summary: no bookings, one booking, a full page, a last partial page, a page past the end', summary(0, 1, 0) === 'You have no bookings yet.' && summary(1, 1, 1) === '1 booking.' && summary(25, 2, 10) === '25 bookings. Showing 11–20.' && summary(25, 3, 5) === '25 bookings. Showing 21–25.' && summary(25, 99, 0) === 'There are no bookings on this page.');
+check('summary: a page with a single row out of several says which one', summary(11, 2, 1) === '11 bookings. Showing 11.');
+
+const sampleRow = (id: string) => ({ id, tableId: 't', startsAt: '2026-11-03T18:00:00.000Z', endsAt: '2026-11-03T19:30:00.000Z', partySize: 2, status: 'CONFIRMED' as const, createdAt: '2026-10-01T00:00:00.000Z', table: { id: 't', name: 'T1' } });
+const loaded = { data: [sampleRow('a'), sampleRow('b')], page: 1, pageSize: 10, total: 2, totalPages: 1 };
+const replaced = replaceBooking(loaded, { id: 'b', status: 'CANCELLED' });
+check('replaceBooking changes only the named booking, keeps its other fields and the paging numbers', replaced.data[1]?.status === 'CANCELLED' && replaced.data[0]?.status === 'CONFIRMED' && replaced.data[1]?.table.name === 'T1' && replaced.total === 2 && replaced.data.length === 2);
+check('replaceBooking never modifies what it was given, and an unknown id changes nothing', loaded.data[1]?.status === 'CONFIRMED' && replaced !== loaded && JSON.stringify(replaceBooking(loaded, { id: 'zzz', status: 'CANCELLED' })) === JSON.stringify(loaded));
+
+const cancelOf = (code: string, message = 'SELECT * FROM "User" -- leaked server detail') => describeCancelError(new ApiError(409, code, message));
+check('BOOKING_STARTED, NOT_FOUND and FORBIDDEN reload the list; the other codes do not', ['BOOKING_STARTED', 'NOT_FOUND', 'FORBIDDEN'].every((c) => cancelOf(c).reloadList) && ['UNAUTHORIZED', 'NETWORK_ERROR', 'INTERNAL_ERROR', 'VALIDATION_ERROR', 'SOMETHING_NEW'].every((c) => !cancelOf(c).reloadList));
+check('each cancel message says what happened (started / not found / not yours / network / generic)', /already started/.test(cancelOf('BOOKING_STARTED').message) && /couldn't find/.test(cancelOf('NOT_FOUND').message) && /isn't yours/.test(cancelOf('FORBIDDEN').message) && /reach the server/.test(cancelOf('NETWORK_ERROR').message) && /Something went wrong/.test(cancelOf('INTERNAL_ERROR').message));
+check('the four distinct cancel messages are all different', new Set(['BOOKING_STARTED', 'NOT_FOUND', 'FORBIDDEN', 'NETWORK_ERROR'].map((c) => cancelOf(c).message)).size === 4);
+check('server wording is NEVER echoed by the cancel or list messages, for any code', ['BOOKING_STARTED', 'NOT_FOUND', 'FORBIDDEN', 'UNAUTHORIZED', 'NETWORK_ERROR', 'INTERNAL_ERROR', 'X'].every((c) => !/SELECT|leaked/.test(cancelOf(c).message + describeListError(new ApiError(500, c, 'SELECT leaked')).message)));
+check('list errors: always retryable; the network one says so', describeListError(new ApiError(0, 'NETWORK_ERROR', 'x')).retryable && /reach the server/.test(describeListError(new ApiError(0, 'NETWORK_ERROR', 'x')).message) && describeListError(new ApiError(500, 'INTERNAL_ERROR', 'x')).retryable);
 
 console.log(`\n${passed} checks passed, ${failures.length} failed`);
 console.log(failures.length === 0 ? 'OK: the client converts, validates and explains booking times exactly as the server expects.' : `FAILED: ${failures.join('; ')}`);

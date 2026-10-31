@@ -8,7 +8,7 @@ A restaurant table booking system with availability search, double-booking preve
 
 🚧 Work in progress
 
-**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout, and working login and registration pages (with form validation that mirrors the server's rules), and the home page where you search for free tables and book one; the "my bookings" *page* is still a placeholder. The admin endpoints are not built yet.
+**Where it is now:** the API is complete for registering, logging in, searching availability, booking, listing and cancelling bookings. The React app has routing, a layout, and working login and registration pages (with form validation that mirrors the server's rules), and the home page where you search for free tables and book one; the "my bookings" page lists your bookings (paged, newest first) and lets you cancel upcoming ones after a confirm step. The admin endpoints are not built yet.
 
 ## Running it locally
 
@@ -105,7 +105,7 @@ cd client
 npm run check:time-conversion
 ```
 
-For about 15 time zones (half-hour and 45-minute offsets such as Kolkata and Kathmandu, daylight saving in both hemispheres, the +14 zone, Samoa's skipped day) it converts **every 15-minute slot of a whole year** and compares each result with an independent calculation made with `Intl`. It also checks that every converted slot is accepted by the server's own validation, that times skipped or repeated by clock changes are detected, and that the client's booking limits and option lists equal the server's. It exits with an error on any difference. Like the parity check it is manual, is not part of CI, adds no dependency, and needs `npm ci` to have been run in `server/` too. It takes a few seconds.
+For about 15 time zones (half-hour and 45-minute offsets such as Kolkata and Kathmandu, daylight saving in both hemispheres, the +14 zone, Samoa's skipped day) it converts **every 15-minute slot of a whole year** and compares each result with an independent calculation made with `Intl`. It also checks that every converted slot is accepted by the server's own validation, that times skipped or repeated by clock changes are detected, and that the client's booking limits, option lists and page-number limits equal the server's. It also covers the "My bookings" rules (reading `?page=`, which bookings can be cancelled, and the messages for each cancel failure). It exits with an error on any difference. Like the parity check it is manual, is not part of CI, adds no dependency, and needs `npm ci` to have been run in `server/` too. It takes a few seconds.
 
 ## Known limitations
 
