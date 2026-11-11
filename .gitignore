@@ -20,3 +20,4 @@ coverage/
 
 # Generated Prisma client
 server/src/generated/
+.neon
