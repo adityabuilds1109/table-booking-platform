@@ -23,7 +23,7 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen flex-col bg-canvas text-ink">
       <header className="border-b border-line bg-surface">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 sm:px-6">
+        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 sm:px-6">
           <Link to="/" className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-control font-display text-xl font-bold text-ink">
             <LogoMark />
             Table Booking
@@ -61,12 +61,12 @@ export default function Layout() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6 sm:px-6 sm:py-10">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-6 sm:px-6 sm:py-10">
         <Outlet />
       </main>
 
       <footer className="border-t border-line bg-surface">
-        <div className="mx-auto flex max-w-3xl flex-col gap-1 px-4 py-6 text-sm text-ink-soft sm:flex-row sm:justify-between sm:px-6">
+        <div className="mx-auto flex max-w-4xl flex-col gap-1 px-4 py-6 text-sm text-ink-soft sm:flex-row sm:justify-between sm:px-6">
           <p>
             <span className="font-display font-bold text-ink">Table Booking</span> · Reserve a table in a few taps.
           </p>

@@ -1,4 +1,6 @@
 import type { AvailableTable } from '../api/schemas';
+import EmptyState from '../components/EmptyState';
+import { IconClock, IconNoTable, IconPeople } from '../components/icons';
 import { formatTimeRange } from './timeConversion';
 import type { AvailabilityState } from './useAvailability';
 
@@ -33,49 +35,67 @@ function statusText(state: AvailabilityState, bookingTableName: string | null): 
 }
 
 export default function AvailabilityResults({ state, summary, onRetry, onBook, bookingTableId, bookingTableName, bookDisabled }: Props) {
+  const noTables = state.status === 'success' && state.tables.length === 0;
+
   return (
-    <section aria-labelledby="results-heading" aria-busy={state.status === 'loading'} className="mt-6">
+    <section aria-labelledby="results-heading" aria-busy={state.status === 'loading'} className="mt-8">
       {summary !== null && state.status !== 'idle' && (
-        <h2 id="results-heading" className="text-lg font-semibold">
+        <h2 id="results-heading" className="font-display text-xl font-bold">
           {formatTimeRange(summary.startsAt, summary.endsAt)}, party of {summary.partySize}
         </h2>
       )}
-      {/* Always in the page (empty until there is something to say): changes to text inside an existing live region are announced reliably, a region that appears together with its text is not. */}
-      <p role="status" className="mt-2 text-slate-800">
+      {/* Always in the page (empty until there is something to say): changes to text inside an existing live region are announced reliably, a region that appears together with its text is not.
+          When there are no tables the empty-state card says it on screen, so this line is visually hidden but still announced. */}
+      <p
+        role="status"
+        className={noTables ? 'sr-only' : `mt-2 ${state.status === 'error' ? 'font-medium text-danger' : 'text-ink-soft'}`}
+      >
         {statusText(state, bookingTableName)}
       </p>
       {summary?.ambiguousZone != null && state.status !== 'idle' && (
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-2 text-sm text-ink-soft">
           That time happens twice because the clocks change. The earlier one ({summary.ambiguousZone}) is used.
         </p>
       )}
       {state.status === 'error' && state.retryable && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-2 rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-        >
+        <button type="button" onClick={onRetry} className="btn btn-primary mt-3">
           Try again
         </button>
       )}
+      {noTables && (
+        <EmptyState icon={<IconNoTable className="h-6 w-6" />} title="No tables free at that time">
+          Try a different start time, a shorter stay or fewer guests.
+        </EmptyState>
+      )}
       {state.status === 'success' && state.tables.length > 0 && (
-        <ul className="mt-3 space-y-2">
+        <ul className="mt-4 space-y-3">
           {state.tables.map((table) => (
-            <li key={table.id} className="flex items-center justify-between rounded border border-slate-300 bg-white p-3">
-              <span className="font-medium">{table.name}</span>
-              <span className="flex items-center gap-4">
-                <span className="text-slate-700">Seats {table.capacity}</span>
-                <button
-                  type="button"
-                  onClick={() => onBook(table)}
-                  disabled={bookingTableId !== null || bookDisabled}
-                  // The visible word "Book" is contained in the accessible name, as WCAG asks; the table makes it unique.
-                  aria-label={bookingTableId === table.id ? undefined : `Book table ${table.name}`}
-                  className="min-h-10 rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
-                >
-                  {bookingTableId === table.id ? 'Booking…' : 'Book'}
-                </button>
-              </span>
+            <li key={table.id} className="card flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-lg font-semibold text-ink">{table.name}</p>
+                <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-ink-soft">
+                  <span className="inline-flex items-center gap-1.5">
+                    <IconPeople />
+                    Seats {table.capacity}
+                  </span>
+                  {summary !== null && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <IconClock />
+                      {formatTimeRange(summary.startsAt, summary.endsAt)}
+                    </span>
+                  )}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onBook(table)}
+                disabled={bookingTableId !== null || bookDisabled}
+                // The visible word "Book" is contained in the accessible name, as WCAG asks; the table makes it unique.
+                aria-label={bookingTableId === table.id ? undefined : `Book table ${table.name}`}
+                className="btn btn-primary w-full sm:w-auto sm:min-w-28"
+              >
+                {bookingTableId === table.id ? 'Booking…' : 'Book'}
+              </button>
             </li>
           ))}
         </ul>

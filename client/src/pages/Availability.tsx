@@ -112,12 +112,12 @@ export default function Availability() {
   return (
     <section>
       <title>Find a table – Table Booking</title>
-      <h1 className="text-2xl font-bold">Find a table</h1>
-      <p className="mt-2 text-slate-600">
+      <h1 className="font-display text-2xl font-bold">Find a table</h1>
+      <p className="mt-2 text-ink-soft">
         Times are in your device&apos;s time zone: {describeDeviceTimeZone(now)}. All fields are required.
       </p>
 
-      <form role="search" aria-label="Find a table" noValidate onSubmit={handleSubmit} className="mt-4 space-y-4">
+      <form role="search" aria-label="Find a table" noValidate onSubmit={handleSubmit} className="card mt-6 space-y-5 p-4 sm:p-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <TextField
             ref={refs.date}
@@ -159,10 +159,7 @@ export default function Availability() {
             error={errors.party}
           />
         </div>
-        <button
-          type="submit"
-          className="rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-        >
+        <button type="submit" className="btn btn-primary w-full sm:w-auto">
           Find tables
         </button>
       </form>
@@ -170,12 +167,12 @@ export default function Availability() {
       {/* Always in the page (empty until needed), like the results status: alerts put into an existing region are announced reliably. */}
       <div role="alert" className="mt-4">
         {failedMessage !== null && (
-          <p ref={messageRef} tabIndex={-1} className="rounded border border-red-200 bg-red-50 p-3 text-red-800">
+          <p ref={messageRef} tabIndex={-1} className="rounded-control border border-danger bg-danger-tint p-3 text-danger">
             {failedMessage}
           </p>
         )}
       </div>
-      {auth.status === 'loading' && <p className="mt-2 text-sm text-slate-700">Checking your login…</p>}
+      {auth.status === 'loading' && <p className="mt-2 text-sm text-ink-soft">Checking your login…</p>}
 
       {booking.state.phase === 'booked' ? (
         <BookingConfirmation
