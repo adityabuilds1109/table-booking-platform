@@ -1,1 +1,156 @@
 @import "tailwindcss";
+
+/* Design tokens: the only place colours, type and shape are defined. Tailwind turns each --color-* into utilities
+   (bg-canvas, text-ink, border-line ...), so components never hard-code a hex value. */
+@theme {
+  /* Surfaces */
+  --color-canvas: #faf7f2;
+  --color-surface: #ffffff;
+  --color-line: #e7dfd3;
+  /* Edge of a form control: 3:1 against white, as WCAG asks of UI components. */
+  --color-line-strong: #8a7f72;
+  --color-hover: #f4efe7;
+
+  /* Text: nothing paler than ink-soft (about 7:1 on white). */
+  --color-ink: #2b2420;
+  --color-ink-soft: #5c5249;
+
+  /* The one accent. White text on it is about 5.6:1. */
+  --color-accent: #b4472a;
+  --color-accent-strong: #963a21;
+  --color-accent-tint: #fbece6;
+
+  /* Meaning, never decoration: success, danger, and neutral (for "Past"). */
+  --color-success: #1f6b3a;
+  --color-success-tint: #e7f4ea;
+  --color-danger: #b42318;
+  --color-danger-strong: #8f1b12;
+  --color-danger-tint: #fdecea;
+  --color-neutral-tint: #f1ece4;
+  --color-disabled: #7a6f64;
+
+  /* Type: system fonts only (no download). Serif for the wordmark and page headings gives the warmth. */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: ui-serif, Georgia, "Times New Roman", serif;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.5;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.4;
+  --text-xl: 1.375rem;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.75rem;
+  --text-2xl--line-height: 1.2;
+
+  /* Shape */
+  --radius-control: 0.5rem;
+  --radius-card: 0.75rem;
+  --shadow-card: 0 1px 2px rgb(43 36 32 / 0.06), 0 1px 3px rgb(43 36 32 / 0.04);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* One focus ring for everything focusable. The outline is a real outline (not a shadow), so forced-colors mode keeps it. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}
+
+/* A white surface with a hairline edge. The border stays in forced-colors mode, where the shadow does not. */
+@utility card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+/* Buttons. Every variant keeps a 1px border (transparent when it has a fill): in forced-colors mode the fill is replaced by
+   system colours, and the border is what keeps the button from looking like plain text. 44px tall for touch. */
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  transition: background-color 120ms ease, border-color 120ms ease;
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@utility btn-primary {
+  background-color: var(--color-accent);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    background-color: var(--color-accent-strong);
+  }
+  &:disabled {
+    background-color: var(--color-disabled);
+  }
+}
+
+@utility btn-secondary {
+  background-color: var(--color-surface);
+  border-color: var(--color-line-strong);
+  color: var(--color-ink);
+  &:hover:not(:disabled) {
+    background-color: var(--color-hover);
+  }
+  &:disabled {
+    color: var(--color-ink-soft);
+    opacity: 0.6;
+  }
+}
+
+/* The first, reversible step of a destructive action ("Cancel booking"). */
+@utility btn-danger-outline {
+  background-color: var(--color-surface);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  &:hover:not(:disabled) {
+    background-color: var(--color-danger-tint);
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+/* The confirming step ("Yes, cancel booking"). */
+@utility btn-danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+  &:hover:not(:disabled) {
+    background-color: var(--color-danger-strong);
+  }
+  &:disabled {
+    background-color: var(--color-disabled);
+  }
+}

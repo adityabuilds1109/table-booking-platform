@@ -50,7 +50,7 @@ export default function TextField({
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-slate-900">
+      <label htmlFor={id} className="block text-sm font-medium text-ink">
         {label}
       </label>
       <input
@@ -68,18 +68,18 @@ export default function TextField({
         spellCheck={type === 'text' ? undefined : false}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        // slate-500 (not a paler grey): the edge of a form control needs 3:1 contrast against its background.
-        className={`mt-1 block w-full rounded border bg-white px-3 py-2 text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
-          error ? 'border-red-700' : 'border-slate-500'
+        // line-strong (not the paler hairline colour): the edge of a form control needs 3:1 contrast against its background.
+        className={`focus-ring mt-1 block min-h-11 w-full rounded-control border bg-surface px-3 py-2 text-ink ${
+          error ? 'border-danger' : 'border-line-strong'
         }`}
       />
       {hint && (
-        <p id={hintId} className="mt-1 text-sm text-slate-600">
+        <p id={hintId} className="mt-1 text-sm text-ink-soft">
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="mt-1 text-sm text-red-700">
+        <p id={errorId} className="mt-1 text-sm text-danger">
           {error}
           {errorAction}
         </p>
