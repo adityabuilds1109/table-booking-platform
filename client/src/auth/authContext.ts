@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import type { LoginInput, RegisterInput } from '../api/endpoints';
-import type { CurrentUser } from '../api/schemas';
+import type { LoginInput, RegisterInput } from '@table-booking/shared/api';
+import type { CurrentUser } from '@table-booking/shared/api';
 
 // loading:       a stored token is being checked with the server (GET /auth/me).
 // anonymous:     nobody is logged in. `expired` is set when a live session was just ended by the server (401), so every

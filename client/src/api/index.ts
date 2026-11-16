@@ -1,7 +1,7 @@
 import { tokenStore } from '../auth/tokenStore';
 import { env } from '../lib/env';
-import { createRequest } from './client';
-import { createEndpoints } from './endpoints';
+import { createRequest } from '@table-booking/shared/api';
+import { createEndpoints } from '@table-booking/shared/api';
 
 // The AuthProvider registers what should happen when the session turns out to be invalid (see AuthProvider.tsx).
 let sessionExpiredHandler: (() => void) | null = null;

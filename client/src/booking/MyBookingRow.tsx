@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
-import type { MyBooking } from '../api/schemas';
-import { describeBookingStatus } from './myBookings';
-import { formatInstant, formatTimeRange } from './timeConversion';
+import type { MyBooking } from '@table-booking/shared/api';
+import { describeBookingStatus } from '@table-booking/shared/booking';
+import { formatInstant, formatTimeRange } from '@table-booking/shared/booking';
 
 // The status is always a WORD ("Confirmed", "Past", "Cancelled"), never colour alone; the colour only reinforces it.
 const STATUS_STYLE = {

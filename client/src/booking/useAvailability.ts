@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ApiError } from '../api/client';
-import type { AvailabilityQuery } from '../api/endpoints';
+import { ApiError } from '@table-booking/shared/api';
+import type { AvailabilityQuery } from '@table-booking/shared/api';
 import { api } from '../api';
-import type { AvailableTable } from '../api/schemas';
-import { describeSearchError } from './bookingErrors';
+import type { AvailableTable } from '@table-booking/shared/api';
+import { describeSearchError } from '@table-booking/shared/booking';
 
 export type AvailabilityState =
   | { status: 'idle' }

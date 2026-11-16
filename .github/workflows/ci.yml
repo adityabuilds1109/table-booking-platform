@@ -87,10 +87,7 @@ jobs:
 
     # No environment variables and no database: the build does not read VITE_API_URL (the browser does, when the app
     # starts), and there are no client tests yet. Checked on a clean checkout without any .env file.
-    # Applies to `run` steps only, not `uses` steps.
-    defaults:
-      run:
-        working-directory: client
+    # Runs from the repository root: client and packages/shared are npm workspaces that share one root lockfile.
 
     steps:
       - name: Check out the repository
@@ -103,16 +100,19 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          # Relative to the repository root, because this is a `uses` step. The client has its own lockfile.
-          cache-dependency-path: client/package-lock.json
+          # The root lockfile covers the client and packages/shared (server/ keeps its own, used by the server job).
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Type-check
-        run: npm run typecheck
+      - name: Type-check shared package
+        run: npm run typecheck -w @table-booking/shared
 
-      # `npm run build` type-checks again, then bundles with Vite. The duplicate check costs a couple of seconds and
-      # keeps this job's steps identical to what a developer runs locally.
+      - name: Type-check client
+        run: npm run typecheck -w client
+
+      # `npm run build -w client` type-checks again, then bundles with Vite. The duplicate check costs a couple of
+      # seconds and keeps this job's steps identical to what a developer runs locally.
       - name: Build
-        run: npm run build
+        run: npm run build -w client

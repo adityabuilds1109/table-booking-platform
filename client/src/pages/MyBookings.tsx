@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import MyBookingRow, { type RowMode } from '../booking/MyBookingRow';
-import { describeListPage, readPageParam } from '../booking/myBookings';
+import { describeListPage, readPageParam } from '@table-booking/shared/booking';
 import { useCancelBooking } from '../booking/useCancelBooking';
 import { useMyBookings } from '../booking/useMyBookings';
 import Pagination from '../components/Pagination';

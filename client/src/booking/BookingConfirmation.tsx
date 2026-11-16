@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import type { Booking } from '../api/schemas';
-import { formatTimeRange } from './timeConversion';
+import type { Booking } from '@table-booking/shared/api';
+import { formatTimeRange } from '@table-booking/shared/booking';
 
 type Props = { booking: Booking; tableName: string; onSearchAgain: () => void };
 

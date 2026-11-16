@@ -13,12 +13,12 @@
 // (which finds the UTC instants whose wall-clock reading in that zone matches). Every converted slot must also be accepted
 // by the server's own `availabilityQuerySchema` and describe the same instant.
 
-import { ApiError } from '../src/api/client';
-import { describeBookingError, describeCancelError, describeListError, describeSearchError } from '../src/booking/bookingErrors';
-import { BOOKING_LIMITS, DURATION_VALUES, MAX_PAGE_NUMBER, MY_BOOKINGS_PAGE_SIZE, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../src/booking/bookingLimits';
-import { describeBookingStatus, describeListPage, pageSearch, readPageParam, replaceBooking } from '../src/booking/myBookings';
-import { defaultSearchValues, readSearchParams, toSearchParams } from '../src/booking/searchParams';
-import { validateSearch } from '../src/booking/searchValidation';
+import { ApiError } from '@table-booking/shared/api';
+import { describeBookingError, describeCancelError, describeListError, describeSearchError } from '@table-booking/shared/booking';
+import { BOOKING_LIMITS, DURATION_VALUES, MAX_PAGE_NUMBER, MY_BOOKINGS_PAGE_SIZE, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '@table-booking/shared/booking';
+import { describeBookingStatus, describeListPage, pageSearch, readPageParam, replaceBooking } from '@table-booking/shared/booking';
+import { defaultSearchValues, readSearchParams, toSearchParams } from '@table-booking/shared/booking';
+import { validateSearch } from '@table-booking/shared/booking';
 import {
   addLocalDays,
   describeDeviceTimeZone,
@@ -26,7 +26,7 @@ import {
   formatTimeRange,
   localDateString,
   localSlotToUtc,
-} from '../src/booking/timeConversion';
+} from '@table-booking/shared/booking';
 import { BOOKING_RULES } from '../../server/src/bookings/rules';
 import { availabilityQuerySchema } from '../../server/src/bookings/schemas';
 import { paginationQuerySchema } from '../../server/src/lib/pagination';

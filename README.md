@@ -47,11 +47,11 @@ Check it is up: <http://localhost:4000/health> should show `{"status":"ok"}`. Th
 In a second terminal:
 
 ```
-cd client
 npm ci
+cd client
 ```
 
-Create `client/.env` from `client/.env.example` the same way. It holds one setting, `VITE_API_URL` (default `http://localhost:4000`), and everything starting with `VITE_` ends up in the browser bundle, so never put a secret there. Then:
+The `npm ci` runs in the repository root: the client and `packages/shared` are npm workspaces with one shared lockfile. (`server/` stays a separate package with its own `npm ci`.) Create `client/.env` from `client/.env.example` the same way. It holds one setting, `VITE_API_URL` (default `http://localhost:4000`), and everything starting with `VITE_` ends up in the browser bundle, so never put a secret there. Then:
 
 ```
 npm run dev
@@ -94,7 +94,7 @@ cd client
 npm run check:schema-parity
 ```
 
-It feeds about 51,000 inputs through both (length and byte-length boundaries, Unicode, whitespace, wrong types, plus seeded random ones) and compares whether each is accepted or rejected, which fields fail, and the cleaned-up values that would be sent. It exits with an error if they disagree. This is a manual check, not part of CI. It adds no dependency: it runs through the `tsx` that `server/` already has installed, so run `npm ci` in `server/` as well as `client/` first.
+It feeds about 51,000 inputs through both (length and byte-length boundaries, Unicode, whitespace, wrong types, plus seeded random ones) and compares whether each is accepted or rejected, which fields fail, and the cleaned-up values that would be sent. It exits with an error if they disagree. This is a manual check, not part of CI. It adds no dependency: it runs through the `tsx` that `server/` already has installed, so run `npm ci` in `server/` as well as in the repository root first.
 
 ### Checking the local-time to UTC conversion
 
@@ -105,7 +105,7 @@ cd client
 npm run check:time-conversion
 ```
 
-For about 15 time zones (half-hour and 45-minute offsets such as Kolkata and Kathmandu, daylight saving in both hemispheres, the +14 zone, Samoa's skipped day) it converts **every 15-minute slot of a whole year** and compares each result with an independent calculation made with `Intl`. It also checks that every converted slot is accepted by the server's own validation, that times skipped or repeated by clock changes are detected, and that the client's booking limits, option lists and page-number limits equal the server's. It also covers the "My bookings" rules (reading `?page=`, which bookings can be cancelled, and the messages for each cancel failure). It exits with an error on any difference. Like the parity check it is manual, is not part of CI, adds no dependency, and needs `npm ci` to have been run in `server/` too. It takes a few seconds.
+For about 15 time zones (half-hour and 45-minute offsets such as Kolkata and Kathmandu, daylight saving in both hemispheres, the +14 zone, Samoa's skipped day) it converts **every 15-minute slot of a whole year** and compares each result with an independent calculation made with `Intl`. It also checks that every converted slot is accepted by the server's own validation, that times skipped or repeated by clock changes are detected, and that the client's booking limits, option lists and page-number limits equal the server's. It also covers the "My bookings" rules (reading `?page=`, which bookings can be cancelled, and the messages for each cancel failure). It exits with an error on any difference. Like the parity check it is manual, is not part of CI, adds no dependency, and needs `npm ci` to have been run in `server/` and in the repository root. It takes a few seconds.
 
 ## Deploying (free tiers)
 
@@ -153,11 +153,10 @@ The API runs on **Render** (free web service), the database on **Neon** (free Po
 
 ### 3. Client (Netlify)
 
+The build settings live in [netlify.toml](netlify.toml) at the repository root, so there is nothing to type into the dashboard except the two variables below. Leave the base directory empty (the repository root): Netlify must install the whole workspace, because the client imports `packages/shared`. The file sets the build command `npm run build -w client` and the publish directory `client/dist`.
+
 | Setting | Value |
 |---|---|
-| Base directory | `client` |
-| Build command | `npm run build` |
-| Publish directory | `client/dist` (shown as `dist` when the base directory is `client`) |
 | `NODE_VERSION` | `24` |
 | `VITE_API_URL` | `https://<your-api>.onrender.com` (no trailing slash) |
 

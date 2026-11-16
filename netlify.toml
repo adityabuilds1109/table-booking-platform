@@ -1,0 +1,5 @@
+# Base directory is left unset (the repository root) so Netlify installs the whole npm workspace.
+[build]
+  base = "/"
+  command = "npm run build -w client"
+  publish = "client/dist"

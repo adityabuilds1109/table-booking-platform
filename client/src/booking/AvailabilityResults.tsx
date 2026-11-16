@@ -1,5 +1,5 @@
-import type { AvailableTable } from '../api/schemas';
-import { formatTimeRange } from './timeConversion';
+import type { AvailableTable } from '@table-booking/shared/api';
+import { formatTimeRange } from '@table-booking/shared/booking';
 import type { AvailabilityState } from './useAvailability';
 
 export type SearchSummary = { startsAt: string; endsAt: string; partySize: number; ambiguousZone: string | null };

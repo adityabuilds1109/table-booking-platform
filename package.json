@@ -1,0 +1,8 @@
+{
+  "name": "table-booking-platform",
+  "private": true,
+  "workspaces": [
+    "client",
+    "packages/shared"
+  ]
+}
