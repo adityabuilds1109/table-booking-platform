@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../api';
-import { ApiError } from '@table-booking/shared/api';
-import type { AvailableTable, Booking } from '@table-booking/shared/api';
-import { describeBookingError } from '@table-booking/shared/booking';
-import type { ValidSearch } from '@table-booking/shared/booking';
+import { ApiError } from '../api';
+import type { AvailableTable, Booking } from '../api';
+import { describeBookingError } from '../booking';
+import type { ValidSearch } from '../booking';
+import { useApi } from './useApi';
 
 export type BookingState =
   | { phase: 'idle' }
@@ -19,6 +19,7 @@ export type BookingState =
 //  - `pendingRef` is a ref as well as state: state updates lag a render, so a fast double click would otherwise get past a
 //    "pending" check and send two requests.
 export function useBookTable(search: ValidSearch | null, refreshResults: () => void) {
+  const api = useApi();
   const [state, setState] = useState<BookingState>({ phase: 'idle' });
   const pendingRef = useRef(false);
   const mountedRef = useRef(false);

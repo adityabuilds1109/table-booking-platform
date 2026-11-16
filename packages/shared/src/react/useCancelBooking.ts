@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { api } from '../api';
-import { ApiError } from '@table-booking/shared/api';
-import type { Booking, MyBooking } from '@table-booking/shared/api';
-import { describeCancelError } from '@table-booking/shared/booking';
-import { formatInstant } from '@table-booking/shared/booking';
+import { ApiError } from '../api';
+import type { Booking, MyBooking } from '../api';
+import { describeCancelError } from '../booking';
+import { formatInstant } from '../booking';
+import { useApi } from './useApi';
 
 export type CancelPhase = { phase: 'idle' } | { phase: 'confirming'; id: string } | { phase: 'pending'; id: string; tableName: string };
 // `done`: shown in the page's status line (a live region) and focus goes to that booking's row.
@@ -24,6 +24,7 @@ export function useCancelBooking({
   onCancelled: (booking: Pick<Booking, 'id' | 'status'>) => void;
   reloadList: () => void;
 }) {
+  const api = useApi();
   const [phase, setPhase] = useState<CancelPhase>({ phase: 'idle' });
   const [message, setMessage] = useState<CancelMessage | null>(null);
   const pendingRef = useRef(false);

@@ -7,7 +7,8 @@
     "./api": "./src/api/index.ts",
     "./booking": "./src/booking/index.ts",
     "./auth": "./src/auth/index.ts",
-    "./lib": "./src/lib/index.ts"
+    "./lib": "./src/lib/index.ts",
+    "./react": "./src/react/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
@@ -16,6 +17,10 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/react": "19.3.0",
     "typescript": "~6.0.3"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   }
 }

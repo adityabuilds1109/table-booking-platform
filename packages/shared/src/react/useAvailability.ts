@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { ApiError } from '@table-booking/shared/api';
-import type { AvailabilityQuery } from '@table-booking/shared/api';
-import { api } from '../api';
-import type { AvailableTable } from '@table-booking/shared/api';
-import { describeSearchError } from '@table-booking/shared/booking';
+import { ApiError } from '../api';
+import type { AvailabilityQuery } from '../api';
+import type { AvailableTable } from '../api';
+import { describeSearchError } from '../booking';
+import { useApi } from './useApi';
 
 export type AvailabilityState =
   | { status: 'idle' }
@@ -17,6 +17,7 @@ export type AvailabilityState =
 //  - An aborted request is not an error and shows nothing.
 // `reload` repeats the current search (Retry, or "search again" with identical values).
 export function useAvailability(query: AvailabilityQuery | null): { state: AvailabilityState; reload: () => void } {
+  const api = useApi();
   const [state, setState] = useState<AvailabilityState>({ status: 'idle' });
   const [attempt, setAttempt] = useState(0);
 
@@ -47,7 +48,7 @@ export function useAvailability(query: AvailabilityQuery | null): { state: Avail
       });
 
     return () => controller.abort();
-  }, [date, startTime, durationMinutes, partySize, attempt]);
+  }, [api, date, startTime, durationMinutes, partySize, attempt]);
 
   return { state, reload: () => setAttempt((current) => current + 1) };
 }

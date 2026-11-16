@@ -6,7 +6,7 @@ Restaurant table booking platform (portfolio project). Monorepo:
 
 - `server/` — Node.js, TypeScript, Express, PostgreSQL, Prisma
 - `client/` — React, TypeScript, Tailwind (Vite)
-- `packages/shared/` — `@table-booking/shared`: framework-free client code (API client, schemas, booking and auth rules), source-only TypeScript. `client/` and `packages/shared/` are npm workspaces of the root `package.json`; `server/` is not.
+- `packages/shared/` — `@table-booking/shared`: framework-free client code (API client, schemas, booking and auth rules), source-only TypeScript. Import non-React code from `@table-booking/shared/{api,booking,auth,lib}`; React code (`ApiProvider`, `useApi`, the booking hooks) only from `@table-booking/shared/react`, so nothing else pulls in React. `client/` and `packages/shared/` are npm workspaces of the root `package.json`; `server/` is not.
 
 ## About me
 

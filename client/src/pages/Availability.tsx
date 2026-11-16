@@ -5,14 +5,14 @@ import { useAuth } from '../auth/useAuth';
 import SelectField, { type SelectOption } from '../components/SelectField';
 import TextField from '../components/TextField';
 import BookingConfirmation from '../booking/BookingConfirmation';
-import { useBookTable } from '../booking/useBookTable';
+import { useBookTable } from '@table-booking/shared/react';
 import AvailabilityResults, { type SearchSummary } from '../booking/AvailabilityResults';
 import { BOOKING_LIMITS, DURATION_VALUES, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '@table-booking/shared/booking';
 import { readSearchParams, toSearchParams, type SearchValues } from '@table-booking/shared/booking';
 import { validateSearch, type SearchErrors } from '@table-booking/shared/booking';
 import type { AvailableTable } from '@table-booking/shared/api';
 import { addLocalDays, describeDeviceTimeZone, formatStartTimeLabel, localDateString, zoneAbbreviation } from '@table-booking/shared/booking';
-import { useAvailability } from '../booking/useAvailability';
+import { useAvailability } from '@table-booking/shared/react';
 
 type Field = keyof SearchValues;
 const FIELD_ORDER: readonly Field[] = ['date', 'time', 'duration', 'party'];

@@ -1,6 +1,6 @@
 import type { AvailableTable } from '@table-booking/shared/api';
 import { formatTimeRange } from '@table-booking/shared/booking';
-import type { AvailabilityState } from './useAvailability';
+import type { AvailabilityState } from '@table-booking/shared/react';
 
 export type SearchSummary = { startsAt: string; endsAt: string; partySize: number; ambiguousZone: string | null };
 
