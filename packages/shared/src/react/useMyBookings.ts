@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { api } from '../api';
-import { ApiError } from '@table-booking/shared/api';
-import type { MyBooking, MyBookingsPage } from '@table-booking/shared/api';
-import { describeListError } from '@table-booking/shared/booking';
-import { MY_BOOKINGS_PAGE_SIZE } from '@table-booking/shared/booking';
-import { replaceBooking } from '@table-booking/shared/booking';
+import { ApiError } from '../api';
+import type { MyBooking, MyBookingsPage } from '../api';
+import { describeListError } from '../booking';
+import { MY_BOOKINGS_PAGE_SIZE } from '../booking';
+import { replaceBooking } from '../booking';
+import { useApi } from './useApi';
 
 export type MyBookingsState =
   | { status: 'loading' }
@@ -21,6 +21,7 @@ export function useMyBookings(page: number): {
   reload: () => void;
   patchBooking: (updated: Pick<MyBooking, 'id' | 'status'>) => void;
 } {
+  const api = useApi();
   // Every result is stored together with the page it belongs to. In the render right after the page number changes, the
   // effect below has not started yet and `stored` still holds the PREVIOUS page; showing it would put page 1's rows under
   // "page 2". So a result for another page counts as "loading".
@@ -45,7 +46,7 @@ export function useMyBookings(page: number): {
       });
 
     return () => controller.abort();
-  }, [page, attempt]);
+  }, [api, page, attempt]);
 
   return {
     state,

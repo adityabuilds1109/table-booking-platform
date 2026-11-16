@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import MyBookingRow, { type RowMode } from '../booking/MyBookingRow';
 import { describeListPage, readPageParam } from '@table-booking/shared/booking';
-import { useCancelBooking } from '../booking/useCancelBooking';
-import { useMyBookings } from '../booking/useMyBookings';
+import { useCancelBooking } from '@table-booking/shared/react';
+import { useMyBookings } from '@table-booking/shared/react';
 import Pagination from '../components/Pagination';
 
 const rowMode = (phase: ReturnType<typeof useCancelBooking>['phase'], id: string): RowMode =>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { setSessionExpiredHandler, api } from '../api';
 import { ApiError } from '@table-booking/shared/api';
+import { useApi, useSessionExpiredHandler } from '@table-booking/shared/react';
 import type { AuthResponse } from '@table-booking/shared/api';
 import { AuthContext, type AuthContextValue, type AuthState } from './authContext';
 import { loginStateFor } from './loginRedirect';
@@ -14,6 +14,8 @@ function isAbort(err: unknown): boolean {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const api = useApi();
+  const setSessionExpiredHandler = useSessionExpiredHandler();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -52,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     );
     return () => controller.abort();
-  }, [checkAttempt]);
+  }, [api, checkAttempt]);
 
   // A request made while logged in came back 401 UNAUTHORIZED (the API layer has already cleared the token): the session
   // is over. Show the logged-out UI and send the user to /login, remembering the page so they return after logging in.
