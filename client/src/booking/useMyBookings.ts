@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
-import { ApiError } from '../api/client';
-import type { MyBooking, MyBookingsPage } from '../api/schemas';
-import { describeListError } from './bookingErrors';
-import { MY_BOOKINGS_PAGE_SIZE } from './bookingLimits';
-import { replaceBooking } from './myBookings';
+import { ApiError } from '@table-booking/shared/api';
+import type { MyBooking, MyBookingsPage } from '@table-booking/shared/api';
+import { describeListError } from '@table-booking/shared/booking';
+import { MY_BOOKINGS_PAGE_SIZE } from '@table-booking/shared/booking';
+import { replaceBooking } from '@table-booking/shared/booking';
 
 export type MyBookingsState =
   | { status: 'loading' }

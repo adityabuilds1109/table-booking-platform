@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { setSessionExpiredHandler, api } from '../api';
-import { ApiError } from '../api/client';
-import type { AuthResponse } from '../api/schemas';
+import { ApiError } from '@table-booking/shared/api';
+import type { AuthResponse } from '@table-booking/shared/api';
 import { AuthContext, type AuthContextValue, type AuthState } from './authContext';
 import { loginStateFor } from './loginRedirect';
 import { tokenStore } from './tokenStore';

@@ -6,6 +6,7 @@ Restaurant table booking platform (portfolio project). Monorepo:
 
 - `server/` — Node.js, TypeScript, Express, PostgreSQL, Prisma
 - `client/` — React, TypeScript, Tailwind (Vite)
+- `packages/shared/` — `@table-booking/shared`: framework-free client code (API client, schemas, booking and auth rules), source-only TypeScript. `client/` and `packages/shared/` are npm workspaces of the root `package.json`; `server/` is not.
 
 ## About me
 
@@ -69,5 +70,5 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - `npm run typecheck`: `tsc --noEmit`
 - `npm run build`: `prisma generate` + compile with `tsconfig.build.json`
 - `npm run db:generate` / `db:seed`: Prisma client / seed data
-- Client (in `client/`): `npm run dev` (port 5173, strictPort), `npm run typecheck`, `npm run build`. Needs `client/.env` with `VITE_API_URL`.
+- Client and shared: install once with `npm ci` in the repo root (one root lockfile; `server/` keeps its own). Then `npm run dev -w client` (port 5173, strictPort), `npm run typecheck -w client`, `npm run typecheck -w @table-booking/shared`, `npm run build -w client`. Needs `client/.env` with `VITE_API_URL`.
 - Run server and client in separate terminals; never start a second dev server on the same port.

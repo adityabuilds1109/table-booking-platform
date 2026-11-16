@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
-import { ApiError } from '../api/client';
-import type { AvailableTable, Booking } from '../api/schemas';
-import { describeBookingError } from './bookingErrors';
-import type { ValidSearch } from './searchValidation';
+import { ApiError } from '@table-booking/shared/api';
+import type { AvailableTable, Booking } from '@table-booking/shared/api';
+import { describeBookingError } from '@table-booking/shared/booking';
+import type { ValidSearch } from '@table-booking/shared/booking';
 
 export type BookingState =
   | { phase: 'idle' }

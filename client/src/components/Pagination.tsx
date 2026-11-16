@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { pageSearch } from '../booking/myBookings';
+import { pageSearch } from '@table-booking/shared/booking';
 
 type PaginationProps = { page: number; totalPages: number };
 

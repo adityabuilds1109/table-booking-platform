@@ -1,8 +1,8 @@
 import { useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router';
-import { ApiError } from '../api/client';
-import { describeAuthError, type AuthFeedback } from '../auth/authErrors';
-import { validateLogin, type LoginFieldErrors } from '../auth/credentialSchemas';
+import { ApiError } from '@table-booking/shared/api';
+import { describeAuthError, type AuthFeedback } from '@table-booking/shared/auth';
+import { validateLogin, type LoginFieldErrors } from '@table-booking/shared/auth';
 import { readLoginState } from '../auth/loginRedirect';
 import { useAuth } from '../auth/useAuth';
 import TextField from '../components/TextField';

@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
-import { ApiError } from '../api/client';
-import type { Booking, MyBooking } from '../api/schemas';
-import { describeCancelError } from './bookingErrors';
-import { formatInstant } from './timeConversion';
+import { ApiError } from '@table-booking/shared/api';
+import type { Booking, MyBooking } from '@table-booking/shared/api';
+import { describeCancelError } from '@table-booking/shared/booking';
+import { formatInstant } from '@table-booking/shared/booking';
 
 export type CancelPhase = { phase: 'idle' } | { phase: 'confirming'; id: string } | { phase: 'pending'; id: string; tableName: string };
 // `done`: shown in the page's status line (a live region) and focus goes to that booking's row.

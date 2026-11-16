@@ -9,7 +9,7 @@
 // rejected, WHICH fields failed.
 
 import { readFileSync } from 'node:fs';
-import { loginFormSchema, registerFormSchema } from '../src/auth/credentialSchemas';
+import { loginFormSchema, registerFormSchema } from '@table-booking/shared/auth';
 import { loginSchema, registerSchema } from '../../server/src/auth/schemas';
 
 type Verdict = { accepted: true; data: string } | { accepted: false; fields: string };
@@ -93,7 +93,7 @@ function compare(label: string, client: Schema, server: Schema, cases: unknown[]
 }
 
 const version = (path: string): string => (JSON.parse(readFileSync(new URL(path, import.meta.url), 'utf8')) as { version: string }).version;
-const clientZod = version('../node_modules/zod/package.json');
+const clientZod = version('../../node_modules/zod/package.json');
 const serverZod = version('../../server/node_modules/zod/package.json');
 console.log(`zod: client ${clientZod}, server ${serverZod}${clientZod === serverZod ? '' : '   <-- different versions: a mismatch may come from zod itself, not from the rules'}`);
 

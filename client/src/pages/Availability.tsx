@@ -7,11 +7,11 @@ import TextField from '../components/TextField';
 import BookingConfirmation from '../booking/BookingConfirmation';
 import { useBookTable } from '../booking/useBookTable';
 import AvailabilityResults, { type SearchSummary } from '../booking/AvailabilityResults';
-import { BOOKING_LIMITS, DURATION_VALUES, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '../booking/bookingLimits';
-import { readSearchParams, toSearchParams, type SearchValues } from '../booking/searchParams';
-import { validateSearch, type SearchErrors } from '../booking/searchValidation';
-import type { AvailableTable } from '../api/schemas';
-import { addLocalDays, describeDeviceTimeZone, formatStartTimeLabel, localDateString, zoneAbbreviation } from '../booking/timeConversion';
+import { BOOKING_LIMITS, DURATION_VALUES, PARTY_SIZE_VALUES, START_TIME_VALUES, formatDuration } from '@table-booking/shared/booking';
+import { readSearchParams, toSearchParams, type SearchValues } from '@table-booking/shared/booking';
+import { validateSearch, type SearchErrors } from '@table-booking/shared/booking';
+import type { AvailableTable } from '@table-booking/shared/api';
+import { addLocalDays, describeDeviceTimeZone, formatStartTimeLabel, localDateString, zoneAbbreviation } from '@table-booking/shared/booking';
 import { useAvailability } from '../booking/useAvailability';
 
 type Field = keyof SearchValues;
