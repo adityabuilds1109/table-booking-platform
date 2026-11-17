@@ -1,1 +1,42 @@
 @import "tailwindcss";
+
+@theme {
+  --color-ink: #111614; /* dark backgrounds, primary buttons, main text */
+  --color-ink-raised: #263029; /* avatar circle, borders on dark */
+  --color-ink-line: #3a463f; /* outlines on dark, disabled button on light */
+  --color-on-ink-muted: #a9b1ac; /* secondary text on dark */
+  --color-brass: #c9a46a; /* accents on dark, brass buttons */
+  --color-brass-text: #7a5b2a; /* brass-coloured text on light */
+  --color-paper: #f7f5f0; /* page background */
+  --color-line: #e4dfd4; /* card borders */
+  --color-line-soft: #ece8df; /* dividers inside cards */
+  --color-field: #d8d2c6; /* input borders */
+  --color-muted: #5e6661; /* secondary text on light */
+  --color-body: #3d4440; /* labels */
+  --color-success: #1f6b4e;
+  --color-danger: #a3281c;
+  --color-danger-soft: #fbedeb;
+  --color-danger-line: #f0cfca;
+  --color-danger-text: #6e1b13;
+  --color-notice-soft: #fbf1e0;
+  --color-notice-line: #eed9b4;
+  --color-notice-text: #6b4a13;
+  --color-neutral-pill: #f0ede6;
+
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+
+  --shadow-card: 0 1px 2px rgb(17 22 20 / 0.04);
+  --shadow-raised: 0 1px 2px rgb(17 22 20 / 0.06), 0 18px 48px rgb(17 22 20 / 0.12);
+
+  --container-page: 1120px; /* max content width: max-w-page */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+  }
+}

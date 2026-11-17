@@ -22,54 +22,59 @@ Source of truth for restyling the React client. The visual reference is the desi
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #111614;          /* dark backgrounds, primary buttons, main text */
-  --color-ink-raised: #263029;   /* avatar circle, borders on dark */
-  --color-ink-line: #3A463F;     /* outlines on dark, disabled button on light */
-  --color-on-ink-muted: #A9B1AC; /* secondary text on dark */
-  --color-brass: #C9A46A;        /* accents on dark, brass buttons */
-  --color-brass-text: #7A5B2A;   /* brass-coloured text on light */
-  --color-paper: #F7F5F0;        /* page background */
-  --color-line: #E4DFD4;         /* card borders */
-  --color-line-soft: #ECE8DF;    /* dividers inside cards */
-  --color-field: #D8D2C6;        /* input borders */
-  --color-muted: #5E6661;        /* secondary text on light */
-  --color-body: #3D4440;         /* labels */
-  --color-success: #1F6B4E;
-  --color-danger: #A3281C;
-  --color-danger-soft: #FBEDEB;
-  --color-danger-line: #F0CFCA;
-  --color-danger-text: #6E1B13;
-  --color-notice-soft: #FBF1E0;
-  --color-notice-line: #EED9B4;
-  --color-notice-text: #6B4A13;
-  --color-neutral-pill: #F0EDE6;
+  --color-ink: #111614; /* dark backgrounds, primary buttons, main text */
+  --color-ink-raised: #263029; /* avatar circle, borders on dark */
+  --color-ink-line: #3a463f; /* outlines on dark, disabled button on light */
+  --color-on-ink-muted: #a9b1ac; /* secondary text on dark */
+  --color-brass: #c9a46a; /* accents on dark, brass buttons */
+  --color-brass-text: #7a5b2a; /* brass-coloured text on light */
+  --color-paper: #f7f5f0; /* page background */
+  --color-line: #e4dfd4; /* card borders */
+  --color-line-soft: #ece8df; /* dividers inside cards */
+  --color-field: #d8d2c6; /* input borders */
+  --color-muted: #5e6661; /* secondary text on light */
+  --color-body: #3d4440; /* labels */
+  --color-success: #1f6b4e;
+  --color-danger: #a3281c;
+  --color-danger-soft: #fbedeb;
+  --color-danger-line: #f0cfca;
+  --color-danger-text: #6e1b13;
+  --color-notice-soft: #fbf1e0;
+  --color-notice-line: #eed9b4;
+  --color-notice-text: #6b4a13;
+  --color-neutral-pill: #f0ede6;
 
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, serif;
 
   --shadow-card: 0 1px 2px rgb(17 22 20 / 0.04);
-  --shadow-raised: 0 1px 2px rgb(17 22 20 / 0.06), 0 18px 48px rgb(17 22 20 / 0.12);
+  --shadow-raised:
+    0 1px 2px rgb(17 22 20 / 0.06), 0 18px 48px rgb(17 22 20 / 0.12);
+  --container-page: 1120px; /* max content width: max-w-page */
 }
 ```
 
 `index.html` `<head>`:
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ## Type
 
-| Use | Font | Size / weight |
-|---|---|---|
-| Page hero title | display | 52 px (36 px under 640 px), 600, tracking -0.02em, line-height 1.05 |
-| Section title ("3 tables available") | display | 30 px, 600 |
-| Big numbers (table "T1", day "17") | display | 34–40 px, 600, line-height 1 |
-| Eyebrow label ("RESERVATIONS") | sans | 11–12 px, 600, uppercase, tracking 0.14em, brass on dark / brass-text on light |
-| Body | sans | 15 px, 400 |
-| Field label | sans | 11 px, 600, uppercase, tracking 0.1em, muted (search bar); 13 px 600 body (auth forms) |
+| Use                                  | Font    | Size / weight                                                                          |
+| ------------------------------------ | ------- | -------------------------------------------------------------------------------------- |
+| Page hero title                      | display | 52 px (36 px under 640 px), 600, tracking -0.02em, line-height 1.05                    |
+| Section title ("3 tables available") | display | 30 px, 600                                                                             |
+| Big numbers (table "T1", day "17")   | display | 34–40 px, 600, line-height 1                                                           |
+| Eyebrow label ("RESERVATIONS")       | sans    | 11–12 px, 600, uppercase, tracking 0.14em, brass on dark / brass-text on light         |
+| Body                                 | sans    | 15 px, 400                                                                             |
+| Field label                          | sans    | 11 px, 600, uppercase, tracking 0.1em, muted (search bar); 13 px 600 body (auth forms) |
 
 Serif is only for headings and big numbers. Everything people read in sentences or tap is Manrope.
 
@@ -90,13 +95,16 @@ Serif is only for headings and big numbers. Everything people read in sentences 
 ## Screens
 
 ### Layout (header)
+
 Dark band (`bg-ink`), content max width 1120 px, 32 px side padding, 1 px `ink-raised` line under the header row.
+
 - Left: logo mark (30 px circle, 1.5 px brass border, brass fork-and-knife icon) + "Table Booking" in display 21 px 600 white.
 - Right: nav links 14 px, `on-ink-muted`; the active link is white, 600, with a 1.5 px brass underline (NavLink `isActive`).
 - Logged in: avatar circle (32 px, `ink-raised`, brass initial = first letter of the email, uppercase, `aria-hidden`), email in `on-ink-muted`, "Log out" as an outline pill (1 px `ink-line`, white text).
 - Pages that show a hero (Find a table, My bookings) continue the dark band under the header; `Layout` keeps rendering `<Outlet />` and each page renders its own hero. Login/Register don't use the dark hero (see below).
 
 ### Find a table (`Availability.tsx`, `AvailabilityResults.tsx`, `BookingConfirmation.tsx`)
+
 - Hero on dark: eyebrow NEW TEXT "Reservations", title NEW TEXT "Find your table", then the existing time-zone sentence in `on-ink-muted`. 56 px top padding, 88 px bottom padding.
 - Search form: one white bar, 18 px radius, `shadow-raised`, pulled up over the hero edge (`-mt-12`). Inside, a grid `repeat(auto-fit, minmax(170px, 1fr))`: four field segments (uppercase label above a borderless 16 px 600 value) separated by 1 px `line-soft` left borders, then the "Find tables" button (ink, magnifier icon in brass) filling the last cell. Existing `TextField`/`SelectField` get a variant for this, without changing their props contract for the auth forms.
 - Results header: eyebrow with the full date (brass-text), section title "N tables available" (keep the existing wording logic), summary line on the right in muted. 1 px `line` under it.
@@ -104,6 +112,7 @@ Dark band (`bg-ink`), content max width 1120 px, 32 px side padding, 1 px `ink-r
 - Confirmation: same card style with a success heading; keep its links/buttons and focus behaviour.
 
 ### My bookings (`MyBookings.tsx`, `MyBookingRow.tsx`, `Pagination.tsx`)
+
 - Hero on dark, smaller: eyebrow NEW TEXT "Your reservations", title "My bookings" (44 px), the existing status line underneath in `on-ink-muted`.
 - The list is one white card (18 px radius) with rows divided by `line-soft`.
 - Row: date column 64 px wide with a right divider (weekday uppercase brass-text, day number display 34 px, month small muted), then time range (17 px 600) and "Table T3 · Party of 2" in muted; status and the cancel action on the right.
@@ -112,11 +121,13 @@ Dark band (`bg-ink`), content max width 1120 px, 32 px side padding, 1 px `ink-r
 - Pagination: "Page X of Y" on the left, Previous (secondary pill) / Next (primary pill) on the right.
 
 ### Log in / Register (`Login.tsx`, `Register.tsx`)
+
 - Keep the `Layout` header for consistency. Below it, render the page as two columns that wrap on small screens:
   - Left (dark, `bg-ink`): eyebrow NEW TEXT "Welcome back" (Register: "Join us"), display 48 px NEW TEXT "Your table, held for you.", a muted sentence NEW TEXT "Log in to reserve a table and manage your bookings in one place." (Register: "Create an account to reserve a table and manage your bookings."). Hidden under 768 px.
   - Right: the form, max width 400 px, title in display 36 px, "New here? Create an account" link under the title (brass-text, 600), the session-expired notice in the notice style, inputs and full-width primary button as in Components.
 
 ### Not found (`NotFound.tsx`)
+
 Display title, muted sentence, primary button back to Find a table. Keep the existing text.
 
 ## PR plan (one branch each, small)
