@@ -7,6 +7,7 @@ Restaurant table booking platform (portfolio project). Monorepo:
 - `server/` — Node.js, TypeScript, Express, PostgreSQL, Prisma
 - `client/` — React, TypeScript, Tailwind (Vite)
 - `packages/shared/` — `@table-booking/shared`: framework-free client code (API client, schemas, booking and auth rules), source-only TypeScript. Import non-React code from `@table-booking/shared/{api,booking,auth,lib}`; React code (`ApiProvider`, `useApi`, the booking hooks) only from `@table-booking/shared/react`, so nothing else pulls in React. `client/` and `packages/shared/` are npm workspaces of the root `package.json`; `server/` is not.
+- `docs/design/web-redesign.md` is the source of truth for the UI (tokens, components, screens). Read it before any UI change.
 
 ## About me
 
@@ -51,6 +52,24 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - Booking creation must lock the Table row with `SELECT ... FOR UPDATE`. A concurrency test must prove losers are rejected by the app check, not by the exclusion constraint.
 - Never use `--forceExit` to silence Jest's open-handle warning; find the root cause. Timers raced in tests must be cleared. Every concurrency test needs a mutation check proving it fails when the lock is removed.
 
+### Monorepo
+
+- Every workspace declares every tool and type package it uses (`typescript`, `@types/*`). Never rely on hoisting.
+- `react` in `packages/shared` is a peerDependency with a range (`^19.0.0`): the web and Expo apps each bring their own React. One copy only: check `npm ls react`.
+- `zod` is the same exact version everywhere (client, shared, server).
+
+### React
+
+- Values from context or props used inside `useEffect` go in its dependency array (e.g. `api` from `useApi()`).
+- The API object is created once at module scope in `main.tsx`, never inside a component. `<ApiProvider>` wraps `<AuthProvider>`, because AuthProvider calls the API.
+
+### UI
+
+- Use the `@theme` tokens (`bg-ink`, `text-brass-text`, `max-w-page`, …). No hex values in `className` when a token exists.
+- Styling PRs change only classes, layout markup and CSS. Keep all copy, `aria-*`, `role`, `ref`, `data-testid` and focus behaviour.
+- Every interactive element: visible focus ring, at least 44 px tall. Brass `#C9A46A` only for text on dark backgrounds; on light use `brass-text`.
+- Loading anything from a third-party domain (fonts, scripts, CDNs) needs my approval first.
+
 ## Environment
 
 - Development happens on two machines: Windows (PowerShell) and macOS (zsh). Give commands for the OS I mention; if unsure, ask.
@@ -61,6 +80,9 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - Windows PowerShell 5.1 mangles `\"` inside command arguments. For SQL with quoted identifiers, pipe it to psql on stdin: `@'...'@ | docker compose -f ..\docker-compose.yml exec -T db psql -U booking -d booking`.
 - `prisma migrate dev` doesn't generate the client in Prisma 7. Run `npm run db:generate` after every schema change.
 - The generated Prisma client (`server/src/generated/`) is gitignored. Fresh checkouts and CI need `prisma generate` before `tsc`.
+- Run npm and git commands from the repo root: `npm run <script> -w client`, `-w @table-booking/shared`. Inside `client/`, `-w client` fails.
+- `client/dist/` is build output (gitignored). Never edit it; edit `client/index.html` and `client/src/`.
+- zsh treats `#` as an argument, not a comment, unless `setopt interactivecomments` is set. Don't put inline comments in commands for me to paste.
 
 ## Commands
 
@@ -72,3 +94,4 @@ I'm learning TypeScript, React, PostgreSQL, Prisma, Jest and GitHub Actions.
 - `npm run db:generate` / `db:seed`: Prisma client / seed data
 - Client and shared: install once with `npm ci` in the repo root (one root lockfile; `server/` keeps its own). Then `npm run dev -w client` (port 5173, strictPort), `npm run typecheck -w client`, `npm run typecheck -w @table-booking/shared`, `npm run build -w client`. Needs `client/.env` with `VITE_API_URL`.
 - Run server and client in separate terminals; never start a second dev server on the same port.
+- Manual 401 test: put a junk token in `localStorage['tbp.token']`, then use a protected route (My bookings, Reserve). Search is public and never returns 401.
