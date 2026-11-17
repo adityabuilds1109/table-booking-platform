@@ -211,3 +211,54 @@ A log of every time Claude Code got something wrong, and how I caught it.
 - **Task:** Search with AbortSignal.
 - **What happened:** The no-abort mutation failed 10 checks, including conversion checks, because each page load then sent two live requests.
 - **Lesson:** A mutation can fail more than its target. I read which checks failed and why, not just that something failed.
+
+### 2026-11-16 — Shared package relied on a hoisted `tsc`
+
+- **Task:** Step 1, create `packages/shared` as an npm workspace.
+- **What was wrong:** The shared `typecheck` script used TypeScript without declaring it. It only worked because the client's copy was hoisted to the root `node_modules`.
+- **How I caught it:** Plan review: "where does this `tsc` come from?"
+- **Fix:** Shared declares `typescript` (same `~6.0.3` spec), later `@types/react` too.
+- **Lesson → CLAUDE.md change?:** Yes. Every workspace declares the tools it uses.
+
+### 2026-11-16 — `netlify.toml` without `base` doesn't override the dashboard
+
+- **Task:** Move the Netlify build to the repo root for workspaces.
+- **What was wrong:** The file left `base` out, assuming that means "repo root". Netlify's docs only say a _specified_ base overrides the UI, so the old `client` base directory would still apply.
+- **How I caught it:** Read Netlify's monorepo docs before merging.
+- **Fix:** `base = "/"` in `netlify.toml`, checked in the deploy preview log.
+- **Lesson → CLAUDE.md change?:** No. Deploy config is checked in the preview build log before merging.
+
+### 2026-11-16 — Context value missing from effect dependencies
+
+- **Task:** Step 2a, hooks get `api` from `useApi()` instead of a module import.
+- **What was wrong:** The plan left the `useEffect` dependency arrays unchanged. `api` now comes from context, so it belongs in deps; otherwise a new `api` (tests, mobile) would leave effects using a stale one.
+- **How I caught it:** Plan review. (My prompt said "only change the call sites", which invited it.)
+- **Fix:** Added `api` to the deps of `useAvailability`, `useMyBookings` and the `getMe` effect.
+- **Lesson → CLAUDE.md change?:** Yes.
+
+### 2026-11-16 — Exact peerDependency would block Expo
+
+- **What was wrong:** The plan pinned shared's `react` peer to exactly `19.3.1`. Each Expo SDK requires its own React version, so shared could never satisfy both apps.
+- **Fix:** Peer range `^19.0.0`; dev-only `@types/react` stays exact.
+- **Lesson → CLAUDE.md change?:** Yes. Peer dependencies are ranges.
+
+### 2026-11-16 — Manual 401 test assumed every request is authenticated
+
+- **What was wrong:** The test said "junk token, then click My bookings _or search_". `GET /tables/availability` is public, so searching never returns 401.
+- **How I caught it:** Checked which server routes use `authenticate`.
+- **Lesson:** Base manual tests on the server routes, not on assumptions about them.
+
+### 2026-11-17 — Two false alarms from comparing the wrong things
+
+- **What Claude Code did:** (1) Reported the CSS bundle "shrank" from 15.42 kB to 10.70 kB. (2) Said the build "rewrote the tracked `client/dist/` files".
+- **What was wrong:** (1) The 15.42 kB build came from `feat/ui-polish`, which has extra CSS; the step 1 build was already 10.70 kB. (2) `client/dist/` is gitignored and not tracked.
+- **How I caught it:** Compared with my own earlier build output and checked `git ls-tree` on `main`.
+- **Lesson:** Before chasing a regression, check both numbers come from the same branch.
+
+### 2026-11-17 — Non-breaking space pasted into `index.html` moved `<title>` into `<body>`
+
+- **Task:** Add the font `<link>`s by hand (auto mode blocked the edit).
+- **What was wrong:** Text copied from chat contained U+00A0. The HTML parser treats it as text, closes `<head>` early, and puts the rest (including `<title>`) in `<body>`. Visible as a strip above the header.
+- **How I caught it:** DevTools Elements showed `"&nbsp;"` and `<title>` inside `<body>`.
+- **Fix:** `sed -i '' $'s/\xc2\xa0/ /g' client/index.html`.
+- **Lesson:** After pasting into HTML, check the parsed DOM, not just the rendered page.
