@@ -1,4 +1,5 @@
 import { useId, type ReactNode, type Ref } from 'react';
+import { VARIANT_CLASSES, type FieldVariant } from './fieldVariants';
 
 type TextFieldProps = {
   label: string;
@@ -19,6 +20,7 @@ type TextFieldProps = {
   // the page still validates the value itself, because typing can bypass it.
   min?: string;
   max?: string;
+  variant?: FieldVariant;
   // React 19 passes `ref` to function components as a normal prop.
   ref?: Ref<HTMLInputElement>;
 };
@@ -40,17 +42,19 @@ export default function TextField({
   autoCapitalize,
   min,
   max,
+  variant = 'default',
   ref,
 }: TextFieldProps) {
   // useId gives each field instance a unique, stable id, so two fields on a page can never share one.
   const id = useId();
   const hintId = `${id}-hint`;
   const errorId = `${id}-error`;
+  const classes = VARIANT_CLASSES[variant];
   const describedBy = [hint ? hintId : null, error ? errorId : null].filter((part) => part !== null).join(' ');
 
   return (
-    <div>
-      <label htmlFor={id} className="block text-sm font-medium text-slate-900">
+    <div className={classes.wrapper || undefined}>
+      <label htmlFor={id} className={classes.label}>
         {label}
       </label>
       <input
@@ -69,17 +73,15 @@ export default function TextField({
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
         // slate-500 (not a paler grey): the edge of a form control needs 3:1 contrast against its background.
-        className={`mt-1 block w-full rounded border bg-white px-3 py-2 text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 ${
-          error ? 'border-red-700' : 'border-slate-500'
-        }`}
+        className={`${classes.control} ${error ? classes.controlInvalid : classes.controlValid}`}
       />
       {hint && (
-        <p id={hintId} className="mt-1 text-sm text-slate-600">
+        <p id={hintId} className={classes.hint}>
           {hint}
         </p>
       )}
       {error && (
-        <p id={errorId} className="mt-1 text-sm text-red-700">
+        <p id={errorId} className={classes.error}>
           {error}
           {errorAction}
         </p>

@@ -43,6 +43,8 @@ Source of truth for restyling the React client. The visual reference is the desi
   --color-notice-line: #eed9b4;
   --color-notice-text: #6b4a13;
   --color-neutral-pill: #f0ede6;
+  --color-pill-text: #4a514c; /* text on the neutral pill */
+  --color-on-ink-disabled: #e9e6df; /* text on a disabled / in-progress button */
 
   --font-sans: "Manrope", system-ui, sans-serif;
   --font-display: "Cormorant Garamond", Georgia, serif;

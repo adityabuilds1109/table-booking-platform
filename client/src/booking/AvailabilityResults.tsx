@@ -32,52 +32,89 @@ function statusText(state: AvailabilityState, bookingTableName: string | null): 
   }
 }
 
+const FOCUS_RING = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
+const PRIMARY_BUTTON = `min-h-12 rounded-xl bg-ink px-5 font-semibold text-white hover:bg-ink-raised ${FOCUS_RING}`;
+
 export default function AvailabilityResults({ state, summary, onRetry, onBook, bookingTableId, bookingTableName, bookDisabled }: Props) {
+  // The big section title is only for a real list of tables; loading, error and "no tables" text stays body size.
+  const hasTables = state.status === 'success' && state.tables.length > 0;
   return (
-    <section aria-labelledby="results-heading" aria-busy={state.status === 'loading'} className="mt-6">
-      {summary !== null && state.status !== 'idle' && (
-        <h2 id="results-heading" className="text-lg font-semibold">
-          {formatTimeRange(summary.startsAt, summary.endsAt)}, party of {summary.partySize}
-        </h2>
-      )}
-      {/* Always in the page (empty until there is something to say): changes to text inside an existing live region are announced reliably, a region that appears together with its text is not. */}
-      <p role="status" className="mt-2 text-slate-800">
-        {statusText(state, bookingTableName)}
-      </p>
+    <section aria-labelledby="results-heading" aria-busy={state.status === 'loading'} className="mt-10">
+      <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b border-line pb-4">
+        {/* Always in the page (empty until there is something to say): changes to text inside an existing live region are announced reliably, a region that appears together with its text is not. */}
+        <p role="status" className={`order-1 ${hasTables ? 'font-display text-[30px] leading-tight font-semibold' : 'text-body'}`}>
+          {statusText(state, bookingTableName)}
+        </p>
+        {summary !== null && state.status !== 'idle' && (
+          <h2 id="results-heading" className="order-2 text-sm text-muted">
+            {formatTimeRange(summary.startsAt, summary.endsAt)}, party of {summary.partySize}
+          </h2>
+        )}
+      </div>
       {summary?.ambiguousZone != null && state.status !== 'idle' && (
-        <p className="mt-2 text-sm text-slate-700">
+        <p className="mt-3 text-sm text-muted">
           That time happens twice because the clocks change. The earlier one ({summary.ambiguousZone}) is used.
         </p>
       )}
       {state.status === 'error' && state.retryable && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-2 rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-        >
+        <button type="button" onClick={onRetry} className={`mt-4 ${PRIMARY_BUTTON}`}>
           Try again
         </button>
       )}
       {state.status === 'success' && state.tables.length > 0 && (
-        <ul className="mt-3 space-y-2">
-          {state.tables.map((table) => (
-            <li key={table.id} className="flex items-center justify-between rounded border border-slate-300 bg-white p-3">
-              <span className="font-medium">{table.name}</span>
-              <span className="flex items-center gap-4">
-                <span className="text-slate-700">Seats {table.capacity}</span>
+        <ul className="mt-6 grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5">
+          {state.tables.map((table) => {
+            const inProgress = bookingTableId === table.id;
+            return (
+              <li
+                key={table.id}
+                className={`flex flex-col rounded-2xl bg-white p-5 shadow-card ${
+                  inProgress ? 'border-[1.5px] border-brass' : 'border border-line'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">Table</p>
+                    <p className="font-display text-[40px] leading-none font-semibold">{table.name}</p>
+                  </div>
+                  <p className="flex items-center gap-2 text-sm font-semibold text-body">
+                    <span
+                      aria-hidden="true"
+                      className={`size-[7px] rounded-full ${inProgress ? 'bg-brass' : 'bg-success'}`}
+                    />
+                    {inProgress ? 'In progress' : 'Available'}
+                  </p>
+                </div>
+                <p className="mt-4 mb-5 flex items-center gap-2 text-muted">
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    width="18"
+                    height="18"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="9" cy="8" r="3.5" />
+                    <path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6M16 4.8a3.5 3.5 0 0 1 0 6.4M18 14.3c2 .7 3.5 2.5 3.5 5.7" />
+                  </svg>
+                  Seats up to {table.capacity}
+                </p>
                 <button
                   type="button"
                   onClick={() => onBook(table)}
                   disabled={bookingTableId !== null || bookDisabled}
                   // The visible word "Book" is contained in the accessible name, as WCAG asks; the table makes it unique.
-                  aria-label={bookingTableId === table.id ? undefined : `Book table ${table.name}`}
-                  className="min-h-10 rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
+                  aria-label={inProgress ? undefined : `Book table ${table.name}`}
+                  className={`mt-auto w-full disabled:cursor-not-allowed disabled:bg-ink-line disabled:text-on-ink-disabled ${PRIMARY_BUTTON}`}
                 >
-                  {bookingTableId === table.id ? 'Booking…' : 'Book'}
+                  {inProgress ? 'Booking…' : 'Book'}
                 </button>
-              </span>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>
