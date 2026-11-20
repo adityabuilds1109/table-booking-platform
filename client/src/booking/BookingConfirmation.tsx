@@ -26,7 +26,7 @@ export default function BookingConfirmation({ booking, tableName, onSearchAgain 
         id="confirmation-heading"
         ref={headingRef}
         tabIndex={-1}
-        className="flex items-center gap-3 font-display text-[30px] leading-tight font-semibold text-success focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+        className="flex items-center gap-3 font-display text-[30px] leading-tight font-bold tracking-[-0.03em] text-success focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
       >
         <svg
           aria-hidden="true"

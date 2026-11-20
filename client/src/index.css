@@ -25,8 +25,8 @@
   --color-pill-text: #4a514c; /* text on the neutral pill */
   --color-on-ink-disabled: #e9e6df; /* text on a disabled / in-progress button */
 
-  --font-sans: "Manrope", system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px rgb(17 22 20 / 0.04);
   --shadow-raised: 0 1px 2px rgb(17 22 20 / 0.06), 0 18px 48px rgb(17 22 20 / 0.12);

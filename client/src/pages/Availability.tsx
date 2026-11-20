@@ -120,7 +120,7 @@ export default function Availability() {
       <div className="bg-ink">
         <div className="mx-auto max-w-page px-4 pt-14 pb-22 sm:px-8">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brass">Reservations</p>
-          <h1 className="mt-3 font-display text-4xl leading-[1.05] font-semibold tracking-[-0.02em] text-white sm:text-[52px]">
+          <h1 className="mt-3 font-display text-4xl leading-[1.05] font-bold tracking-[-0.03em] text-white sm:text-[52px]">
             Find your table
           </h1>
           <p className="mt-4 max-w-2xl text-on-ink-muted">

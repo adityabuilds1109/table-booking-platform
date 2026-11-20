@@ -42,7 +42,7 @@ export default function AvailabilityResults({ state, summary, onRetry, onBook, b
     <section aria-labelledby="results-heading" aria-busy={state.status === 'loading'} className="mt-10">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2 border-b border-line pb-4">
         {/* Always in the page (empty until there is something to say): changes to text inside an existing live region are announced reliably, a region that appears together with its text is not. */}
-        <p role="status" className={`order-1 ${hasTables ? 'font-display text-[30px] leading-tight font-semibold' : 'text-body'}`}>
+        <p role="status" className={`order-1 ${hasTables ? 'font-display text-[30px] leading-tight font-bold tracking-[-0.03em]' : 'text-body'}`}>
           {statusText(state, bookingTableName)}
         </p>
         {summary !== null && state.status !== 'idle' && (
@@ -75,7 +75,7 @@ export default function AvailabilityResults({ state, summary, onRetry, onBook, b
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted">Table</p>
-                    <p className="font-display text-[40px] leading-none font-semibold">{table.name}</p>
+                    <p className="font-display text-[40px] leading-none font-bold tracking-[-0.03em]">{table.name}</p>
                   </div>
                   <p className="flex items-center gap-2 text-sm font-semibold text-body">
                     <span
