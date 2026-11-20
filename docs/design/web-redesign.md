@@ -32,7 +32,7 @@ Source of truth for restyling the React client. The visual reference is the desi
   --color-paper-soft: #fcfbf8; /* row background while its cancel is being confirmed */
   --color-line: #e4dfd4; /* card borders */
   --color-line-soft: #ece8df; /* dividers inside cards */
-  --color-field: #d8d2c6; /* input borders */
+  --color-field: #858b87; /* input borders */
   --color-muted: #5e6661; /* secondary text on light */
   --color-body: #3d4440; /* labels */
   --color-success: #1f6b4e;
