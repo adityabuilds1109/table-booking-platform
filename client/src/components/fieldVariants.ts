@@ -8,13 +8,13 @@ const SEGMENT_FOCUS = 'focus-visible:outline-2 focus-visible:-outline-offset-2 f
 export const VARIANT_CLASSES = {
   default: {
     wrapper: '',
-    label: 'block text-sm font-medium text-slate-900',
+    label: 'block text-[13px] font-semibold text-body',
     control:
-      'mt-1 block w-full rounded border bg-white px-3 py-2 text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700',
-    controlValid: 'border-slate-500',
-    controlInvalid: 'border-red-700',
-    hint: 'mt-1 text-sm text-slate-600',
-    error: 'mt-1 text-sm text-red-700',
+      'mt-1.5 block min-h-[50px] w-full rounded-xl border bg-white px-4 text-base text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink',
+    controlValid: 'border-field',
+    controlInvalid: 'border-[1.5px] border-danger',
+    hint: 'mt-1.5 text-sm text-muted',
+    error: 'mt-1.5 text-sm font-medium text-danger',
   },
   segment: {
     wrapper: 'flex h-full flex-col justify-center px-5 py-3',

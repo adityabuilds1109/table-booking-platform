@@ -9,7 +9,7 @@ Source of truth for restyling the React client. The visual reference is the desi
   Do not change logic, hooks, state, validation, routing, API calls, error handling or focus management.
 - **Keep all copy** except where this spec gives new text (marked NEW TEXT).
 - **Keep accessibility as it is:** every `role`, `aria-*`, `tabIndex`, `ref`, live region and label stays.
-  Visible focus ring on every interactive element (2 px brass outline, 2 px offset).
+  Visible focus ring on every interactive element (2 px outline, 2 px offset): `ink` on light surfaces, `brass` only where the outline sits on the dark `ink` background (header, My bookings heading).
 - **No new npm dependencies.** Fonts load with a `<link>` in `index.html`.
 - **Contrast:** text at least 4.5:1. Brass `#C9A46A` is only used for text on the dark ink background;
   on light backgrounds use `brass-text` `#7A5B2A`.
@@ -29,6 +29,7 @@ Source of truth for restyling the React client. The visual reference is the desi
   --color-brass: #c9a46a; /* accents on dark, brass buttons */
   --color-brass-text: #7a5b2a; /* brass-coloured text on light */
   --color-paper: #f7f5f0; /* page background */
+  --color-paper-soft: #fcfbf8; /* row background while its cancel is being confirmed */
   --color-line: #e4dfd4; /* card borders */
   --color-line-soft: #ece8df; /* dividers inside cards */
   --color-field: #d8d2c6; /* input borders */
@@ -117,9 +118,9 @@ Dark band (`bg-ink`), content max width 1120 px, 32 px side padding, 1 px `ink-r
 
 - Hero on dark, smaller: eyebrow NEW TEXT "Your reservations", title "My bookings" (44 px), the existing status line underneath in `on-ink-muted`.
 - The list is one white card (18 px radius) with rows divided by `line-soft`.
-- Row: date column 64 px wide with a right divider (weekday uppercase brass-text, day number display 34 px, month small muted), then time range (17 px 600) and "Table T3 · Party of 2" in muted; status and the cancel action on the right.
+- Row: the existing `formatTimeRange` line (17 px 600), then "Table T3 · Party of 2" in muted; status and the cancel action on the right. The 64 px date column (weekday / day number / month) is deferred: it needs a shared helper that returns those parts.
 - Cancelled: time struck through and muted, "Cancelled" pill. Past bookings: whatever `MyBookingRow` already decides, shown with the neutral pill.
-- Confirm-cancel state: the row background `#FCFBF8`; under it a `danger-soft` box with the existing question text, "Keep" as a secondary button and the confirm as a danger button. Keep the existing button labels.
+- Confirm-cancel state: the row background `paper-soft`; under it a `danger-soft` box with the existing question text, "Keep" as a secondary button and the confirm as a danger button. Keep the existing button labels.
 - Pagination: "Page X of Y" on the left, Previous (secondary pill) / Next (primary pill) on the right.
 
 ### Log in / Register (`Login.tsx`, `Register.tsx`)

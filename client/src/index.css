@@ -8,6 +8,7 @@
   --color-brass: #c9a46a; /* accents on dark, brass buttons */
   --color-brass-text: #7a5b2a; /* brass-coloured text on light */
   --color-paper: #f7f5f0; /* page background */
+  --color-paper-soft: #fcfbf8; /* row background while its cancel is being confirmed */
   --color-line: #e4dfd4; /* card borders */
   --color-line-soft: #ece8df; /* dividers inside cards */
   --color-field: #d8d2c6; /* input borders */
