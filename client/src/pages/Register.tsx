@@ -5,6 +5,7 @@ import { describeAuthError, type AuthFeedback } from '@table-booking/shared/auth
 import { validateRegister, type RegisterFieldErrors } from '@table-booking/shared/auth';
 import { readLoginState } from '../auth/loginRedirect';
 import { useAuth } from '../auth/useAuth';
+import AuthLayout, { AUTH_ERROR_BOX_CLASS, AUTH_LINK_CLASS, AUTH_SUBMIT_CLASS } from '../components/AuthLayout';
 import TextField from '../components/TextField';
 
 type Field = 'name' | 'email' | 'password';
@@ -81,13 +82,22 @@ export default function Register() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      <section className="mx-auto max-w-md">
+    <AuthLayout
+      eyebrow="Join us"
+      sentence="Create an account to reserve a table and manage your bookings."
+    >
+      <section>
         <title>Create an account – Table Booking</title>
-        <h1 className="text-2xl font-bold">Create an account</h1>
-        <p className="mt-2 text-slate-600">All fields are required.</p>
+        <h1 className="font-display text-4xl leading-tight font-bold tracking-[-0.03em]">Create an account</h1>
+        <p className="mt-2 flex min-h-11 flex-wrap items-center gap-x-1 text-body">
+          Already have an account?{' '}
+          <Link to="/login" state={loginState} className={AUTH_LINK_CLASS}>
+            Log in
+          </Link>
+        </p>
+        <p className="mt-4 text-muted">All fields are required.</p>
 
-        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
+        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-6 space-y-5">
           <TextField
             ref={nameRef}
             label="Name"
@@ -112,7 +122,7 @@ export default function Register() {
               showLoginInstead && (
                 <>
                   {' '}
-                  <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
+                  <Link to="/login" state={loginState} className={AUTH_LINK_CLASS}>
                     Log in instead
                   </Link>
                 </>
@@ -134,28 +144,15 @@ export default function Register() {
           {/* Always in the page (empty when there is no message), so screen readers announce text added to it. */}
           <div role="alert">
             {serverFeedback?.formMessage && (
-              <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
+              <p className={AUTH_ERROR_BOX_CLASS}>{serverFeedback.formMessage}</p>
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={pending}
-            // The transparent border is drawn in a system colour in high-contrast mode, where the green background is
-            // replaced; without it the button would lose its edge and look like plain text.
-            className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
-          >
+          <button type="submit" disabled={pending} className={AUTH_SUBMIT_CLASS}>
             {pending ? 'Creating account…' : 'Create account'}
           </button>
         </form>
-
-        <p className="mt-4 text-slate-700">
-          Already have an account?{' '}
-          <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
-            Log in
-          </Link>
-        </p>
       </section>
-    </div>
+    </AuthLayout>
   );
 }

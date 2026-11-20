@@ -6,6 +6,10 @@ import { useCancelBooking } from '@table-booking/shared/react';
 import { useMyBookings } from '@table-booking/shared/react';
 import Pagination from '../components/Pagination';
 
+const FOCUS_RING = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
+const CARD = 'overflow-hidden rounded-[18px] border border-line bg-white shadow-card';
+const LINK = `inline-flex min-h-11 items-center rounded font-semibold text-brass-text underline ${FOCUS_RING}`;
+
 const rowMode = (phase: ReturnType<typeof useCancelBooking>['phase'], id: string): RowMode =>
   phase.phase !== 'idle' && phase.id === id ? phase.phase : 'idle';
 
@@ -49,20 +53,34 @@ export default function MyBookings() {
         : describeListPage({ page, pageSize: state.page.pageSize, total: state.page.total, shown: state.page.data.length });
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      <section>
-        <title>My bookings – Table Booking</title>
-        <h1 ref={headingRef} tabIndex={-1} className="text-2xl font-bold">
-          My bookings
-        </h1>
-        {/* Always in the page (empty text is never needed here): changes to an existing live region are announced reliably. */}
-        <p role="status" className="mt-2 text-slate-800">
-          {statusText}
-        </p>
+    <section>
+      <title>My bookings – Table Booking</title>
+      <div className="bg-ink">
+        <div className="mx-auto max-w-page px-4 pt-12 pb-14 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brass">Your reservations</p>
+          <h1
+            ref={headingRef}
+            tabIndex={-1}
+            className="mt-3 w-fit rounded font-display text-[44px] leading-[1.05] font-bold tracking-[-0.03em] text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brass"
+          >
+            My bookings
+          </h1>
+          {/* Always in the page (empty text is never needed here): changes to an existing live region are announced reliably. */}
+          <p role="status" className="mt-4 max-w-2xl text-on-ink-muted">
+            {statusText}
+          </p>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-page px-4 py-8 sm:px-8">
         {/* Always in the page (empty until needed), like the status line: alerts put into an existing region are announced reliably. */}
         <div role="alert">
           {failedText !== null && (
-            <p ref={messageRef} tabIndex={-1} className="mt-2 rounded border border-red-200 bg-red-50 p-3 text-red-800">
+            <p
+              ref={messageRef}
+              tabIndex={-1}
+              className={`mb-4 rounded-xl border border-danger-line bg-danger-soft p-4 text-danger-text ${FOCUS_RING}`}
+            >
               {failedText}
             </p>
           )}
@@ -72,7 +90,7 @@ export default function MyBookings() {
           <button
             type="button"
             onClick={reload}
-            className="mt-2 rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+            className={`min-h-12 rounded-xl bg-ink px-5 font-semibold text-white hover:bg-ink-raised ${FOCUS_RING}`}
           >
             Try again
           </button>
@@ -80,21 +98,21 @@ export default function MyBookings() {
 
         <div aria-busy={state.status === 'loading'}>
           {loaded !== null && loaded.total === 0 && (
-            <p className="mt-3">
-              <Link to="/" className="font-medium text-emerald-800 underline">
+            <p className={CARD + ' p-6'}>
+              <Link to="/" className={LINK}>
                 Find a table
               </Link>
             </p>
           )}
           {loaded !== null && loaded.total > 0 && loaded.data.length === 0 && (
-            <p className="mt-3">
-              <Link to="/bookings" className="font-medium text-emerald-800 underline">
+            <p className={CARD + ' p-6'}>
+              <Link to="/bookings" className={LINK}>
                 Back to your latest bookings
               </Link>
             </p>
           )}
           {loaded !== null && loaded.data.length > 0 && (
-            <ul className="mt-3 space-y-2">
+            <ul className={`${CARD} divide-y divide-line-soft`}>
               {loaded.data.map((booking) => (
                 <MyBookingRow
                   key={booking.id}
@@ -112,7 +130,7 @@ export default function MyBookings() {
           )}
           {loaded !== null && <Pagination page={page} totalPages={loaded.totalPages} />}
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }

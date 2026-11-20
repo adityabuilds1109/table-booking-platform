@@ -72,7 +72,7 @@ export default function TextField({
         spellCheck={type === 'text' ? undefined : false}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        // slate-500 (not a paler grey): the edge of a form control needs 3:1 contrast against its background.
+        // The border colour comes from the variant: `field` when valid, a 1.5 px `danger` border when there is an error.
         className={`${classes.control} ${error ? classes.controlInvalid : classes.controlValid}`}
       />
       {hint && (

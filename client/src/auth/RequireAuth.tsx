@@ -9,14 +9,20 @@ export default function RequireAuth() {
 
   switch (state.status) {
     case 'loading':
-      return <p className="text-slate-600">Checking your session…</p>;
+      return <p className="mx-auto max-w-page px-4 py-8 text-muted sm:px-8">Checking your session…</p>;
     case 'error':
       return (
-        <div role="alert" className="rounded border border-red-200 bg-red-50 p-4 text-red-800">
-          <p>{state.message}</p>
-          <button type="button" onClick={retry} className="mt-2 rounded bg-red-700 px-3 py-1 text-white hover:bg-red-800">
-            Try again
-          </button>
+        <div className="mx-auto max-w-page px-4 py-8 sm:px-8">
+          <div role="alert" className="rounded-xl border border-danger-line bg-danger-soft p-4 text-danger-text">
+            <p>{state.message}</p>
+            <button
+              type="button"
+              onClick={retry}
+              className="mt-3 min-h-12 rounded-xl bg-ink px-5 font-semibold text-white hover:bg-ink-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            >
+              Try again
+            </button>
+          </div>
         </div>
       );
     case 'anonymous':

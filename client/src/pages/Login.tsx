@@ -5,6 +5,7 @@ import { describeAuthError, type AuthFeedback } from '@table-booking/shared/auth
 import { validateLogin, type LoginFieldErrors } from '@table-booking/shared/auth';
 import { readLoginState } from '../auth/loginRedirect';
 import { useAuth } from '../auth/useAuth';
+import AuthLayout, { AUTH_ERROR_BOX_CLASS, AUTH_LINK_CLASS, AUTH_SUBMIT_CLASS } from '../components/AuthLayout';
 import TextField from '../components/TextField';
 
 type Field = 'email' | 'password';
@@ -75,18 +76,42 @@ export default function Login() {
   const registerState = from === undefined ? undefined : { from };
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6">
-      <section className="mx-auto max-w-md">
+    <AuthLayout
+      eyebrow="Welcome back"
+      sentence="Log in to reserve a table and manage your bookings in one place."
+    >
+      <section>
         <title>Log in – Table Booking</title>
-        <h1 className="text-2xl font-bold">Log in</h1>
+        <h1 className="font-display text-4xl leading-tight font-bold tracking-[-0.03em]">Log in</h1>
+        <p className="mt-2 flex min-h-11 flex-wrap items-center gap-x-1 text-body">
+          New here?{' '}
+          <Link to="/register" state={registerState} className={AUTH_LINK_CLASS}>
+            Create an account
+          </Link>
+        </p>
         {expired && (
-          <p role="status" className="mt-2 rounded border border-amber-200 bg-amber-50 p-3 text-amber-900">
+          <p role="status" className="mt-4 flex items-start gap-3 rounded-xl border border-notice-line bg-notice-soft p-4 text-notice-text">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mt-0.5 shrink-0"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" />
+            </svg>
             Your session has expired. Please log in again.
           </p>
         )}
-        <p className="mt-2 text-slate-600">All fields are required.</p>
+        <p className="mt-4 text-muted">All fields are required.</p>
 
-        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
+        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-6 space-y-5">
           <TextField
             ref={emailRef}
             label="Email"
@@ -112,26 +137,15 @@ export default function Login() {
           {/* Always in the page (empty when there is no message): screen readers announce text put into an existing alert region more reliably than a region that appears together with its text. */}
           <div role="alert">
             {serverFeedback?.formMessage && (
-              <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
+              <p className={AUTH_ERROR_BOX_CLASS}>{serverFeedback.formMessage}</p>
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
-          >
+          <button type="submit" disabled={pending} className={AUTH_SUBMIT_CLASS}>
             {pending ? 'Logging in…' : 'Log in'}
           </button>
         </form>
-
-        <p className="mt-4 text-slate-700">
-          New here?{' '}
-          <Link to="/register" state={registerState} className="font-medium text-emerald-800 underline">
-            Create an account
-          </Link>
-        </p>
       </section>
-    </div>
+    </AuthLayout>
   );
 }
