@@ -37,7 +37,7 @@ export default function Layout() {
                 <path d="M7 3v7a2 2 0 0 0 2 2v9M11 3v7a2 2 0 0 1-2 2M7 3v5M17 21V3c-2 1.5-3 4-3 7a3 3 0 0 0 3 3" />
               </svg>
             </span>
-            <span className="font-display text-[21px] font-semibold text-white">
+            <span className="font-display text-[21px] font-bold tracking-[-0.02em] text-white">
               Table Booking
             </span>
           </Link>
@@ -85,7 +85,7 @@ export default function Layout() {
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-4xl px-4 py-6">
+      <main>
         <Outlet />
       </main>
     </div>

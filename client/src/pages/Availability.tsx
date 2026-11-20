@@ -18,6 +18,11 @@ type Field = keyof SearchValues;
 const FIELD_ORDER: readonly Field[] = ['date', 'time', 'duration', 'party'];
 const MS_PER_MINUTE = 60_000;
 
+// One cell of the search bar. Borders: a line above each stacked cell (1 column), a line above rows 2+ and left of the second
+// column (2 columns), a line left of every cell but the first (one row). Cells never have both a top and a left line at lg.
+const SEARCH_CELL =
+  'border-t border-line-soft first:border-t-0 sm:border-t-0 sm:nth-[n+3]:border-t sm:even:border-l lg:border-t-0 lg:border-l lg:first:border-l-0';
+
 const START_TIME_OPTIONS: readonly SelectOption[] = START_TIME_VALUES.map((value) => ({ value, label: formatStartTimeLabel(value) }));
 const DURATION_OPTIONS: readonly SelectOption[] = DURATION_VALUES.map((value) => ({ value, label: formatDuration(Number(value)) }));
 const PARTY_OPTIONS: readonly SelectOption[] = PARTY_SIZE_VALUES.map((value) => ({ value, label: value }));
@@ -112,91 +117,137 @@ export default function Availability() {
   return (
     <section>
       <title>Find a table – Table Booking</title>
-      <h1 className="text-2xl font-bold">Find a table</h1>
-      <p className="mt-2 text-slate-600">
-        Times are in your device&apos;s time zone: {describeDeviceTimeZone(now)}. All fields are required.
-      </p>
-
-      <form role="search" aria-label="Find a table" noValidate onSubmit={handleSubmit} className="mt-4 space-y-4">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <TextField
-            ref={refs.date}
-            label="Date"
-            name="date"
-            type="date"
-            autoComplete="off"
-            min={localDateString(now)}
-            max={localDateString(addLocalDays(now, BOOKING_LIMITS.maxAdvanceDays))}
-            value={values.date}
-            onChange={(value) => setValues((current) => ({ ...current, date: value }))}
-            error={errors.date}
-          />
-          <SelectField
-            ref={refs.time}
-            label="Start time"
-            name="time"
-            options={START_TIME_OPTIONS}
-            value={values.time}
-            onChange={(value) => setValues((current) => ({ ...current, time: value }))}
-            error={errors.time}
-          />
-          <SelectField
-            ref={refs.duration}
-            label="Length of stay"
-            name="duration"
-            options={DURATION_OPTIONS}
-            value={values.duration}
-            onChange={(value) => setValues((current) => ({ ...current, duration: value }))}
-            error={errors.duration}
-          />
-          <SelectField
-            ref={refs.party}
-            label="Guests"
-            name="party"
-            options={PARTY_OPTIONS}
-            value={values.party}
-            onChange={(value) => setValues((current) => ({ ...current, party: value }))}
-            error={errors.party}
-          />
-        </div>
-        <button
-          type="submit"
-          className="rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-        >
-          Find tables
-        </button>
-      </form>
-
-      {/* Always in the page (empty until needed), like the results status: alerts put into an existing region are announced reliably. */}
-      <div role="alert" className="mt-4">
-        {failedMessage !== null && (
-          <p ref={messageRef} tabIndex={-1} className="rounded border border-red-200 bg-red-50 p-3 text-red-800">
-            {failedMessage}
+      <div className="bg-ink">
+        <div className="mx-auto max-w-page px-4 pt-14 pb-22 sm:px-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-brass">Reservations</p>
+          <h1 className="mt-3 font-display text-4xl leading-[1.05] font-bold tracking-[-0.03em] text-white sm:text-[52px]">
+            Find your table
+          </h1>
+          <p className="mt-4 max-w-2xl text-on-ink-muted">
+            Times are in your device&apos;s time zone: {describeDeviceTimeZone(now)}. All fields are required.
           </p>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-page px-4 pb-12 sm:px-8">
+        <form
+          role="search"
+          aria-label="Find a table"
+          noValidate
+          onSubmit={handleSubmit}
+          className="relative -mt-12 grid grid-cols-1 overflow-hidden rounded-[18px] bg-white shadow-raised sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto]"
+        >
+          <div className={SEARCH_CELL}>
+            <TextField
+              variant="segment"
+              ref={refs.date}
+              label="Date"
+              name="date"
+              type="date"
+              autoComplete="off"
+              min={localDateString(now)}
+              max={localDateString(addLocalDays(now, BOOKING_LIMITS.maxAdvanceDays))}
+              value={values.date}
+              onChange={(value) => setValues((current) => ({ ...current, date: value }))}
+              error={errors.date}
+            />
+          </div>
+          <div className={SEARCH_CELL}>
+            <SelectField
+              variant="segment"
+              ref={refs.time}
+              label="Start time"
+              name="time"
+              options={START_TIME_OPTIONS}
+              value={values.time}
+              onChange={(value) => setValues((current) => ({ ...current, time: value }))}
+              error={errors.time}
+            />
+          </div>
+          <div className={SEARCH_CELL}>
+            <SelectField
+              variant="segment"
+              ref={refs.duration}
+              label="Length of stay"
+              name="duration"
+              options={DURATION_OPTIONS}
+              value={values.duration}
+              onChange={(value) => setValues((current) => ({ ...current, duration: value }))}
+              error={errors.duration}
+            />
+          </div>
+          <div className={SEARCH_CELL}>
+            <SelectField
+              variant="segment"
+              ref={refs.party}
+              label="Guests"
+              name="party"
+              options={PARTY_OPTIONS}
+              value={values.party}
+              onChange={(value) => setValues((current) => ({ ...current, party: value }))}
+              error={errors.party}
+            />
+          </div>
+          <div className={`${SEARCH_CELL} p-3 sm:col-span-2 lg:col-span-1`}>
+            <button
+              type="submit"
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-ink px-6 font-semibold text-white hover:bg-ink-raised focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink lg:h-full"
+            >
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-brass"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+              Find tables
+            </button>
+          </div>
+        </form>
+
+        {/* Always in the page (empty until needed), like the results status: alerts put into an existing region are announced reliably. */}
+        <div role="alert" className="mt-4">
+          {failedMessage !== null && (
+            <p
+              ref={messageRef}
+              tabIndex={-1}
+              className="rounded-xl border border-danger-line bg-danger-soft p-3 text-danger-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+            >
+              {failedMessage}
+            </p>
+          )}
+        </div>
+        {auth.status === 'loading' && <p className="mt-2 text-sm text-muted">Checking your login…</p>}
+
+        {booking.state.phase === 'booked' ? (
+          <BookingConfirmation
+            booking={booking.state.booking}
+            tableName={booking.state.tableName}
+            onSearchAgain={() => {
+              booking.reset();
+              reload();
+            }}
+          />
+        ) : (
+          <AvailabilityResults
+            state={state}
+            summary={summary}
+            onRetry={reload}
+            onBook={handleBook}
+            bookingTableId={pending?.tableId ?? null}
+            bookingTableName={pending?.tableName ?? null}
+            bookDisabled={auth.status === 'loading'}
+          />
         )}
       </div>
-      {auth.status === 'loading' && <p className="mt-2 text-sm text-slate-700">Checking your login…</p>}
-
-      {booking.state.phase === 'booked' ? (
-        <BookingConfirmation
-          booking={booking.state.booking}
-          tableName={booking.state.tableName}
-          onSearchAgain={() => {
-            booking.reset();
-            reload();
-          }}
-        />
-      ) : (
-        <AvailabilityResults
-          state={state}
-          summary={summary}
-          onRetry={reload}
-          onBook={handleBook}
-          bookingTableId={pending?.tableId ?? null}
-          bookingTableName={pending?.tableName ?? null}
-          bookDisabled={auth.status === 'loading'}
-        />
-      )}
     </section>
   );
 }

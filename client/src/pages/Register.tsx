@@ -81,79 +81,81 @@ export default function Register() {
   }
 
   return (
-    <section className="mx-auto max-w-md">
-      <title>Create an account – Table Booking</title>
-      <h1 className="text-2xl font-bold">Create an account</h1>
-      <p className="mt-2 text-slate-600">All fields are required.</p>
+    <div className="mx-auto max-w-4xl px-4 py-6">
+      <section className="mx-auto max-w-md">
+        <title>Create an account – Table Booking</title>
+        <h1 className="text-2xl font-bold">Create an account</h1>
+        <p className="mt-2 text-slate-600">All fields are required.</p>
 
-      <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
-        <TextField
-          ref={nameRef}
-          label="Name"
-          name="name"
-          autoComplete="name"
-          autoCapitalize="words"
-          value={values.name}
-          onChange={(value) => changeField('name', value)}
-          error={nameError}
-        />
-        <TextField
-          ref={emailRef}
-          label="Email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          value={values.email}
-          onChange={(value) => changeField('email', value)}
-          error={emailError}
-          errorAction={
-            showLoginInstead && (
-              <>
-                {' '}
-                <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
-                  Log in instead
-                </Link>
-              </>
-            )
-          }
-        />
-        <TextField
-          ref={passwordRef}
-          label="Password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          hint="At least 8 characters."
-          value={values.password}
-          onChange={(value) => changeField('password', value)}
-          error={passwordError}
-        />
+        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
+          <TextField
+            ref={nameRef}
+            label="Name"
+            name="name"
+            autoComplete="name"
+            autoCapitalize="words"
+            value={values.name}
+            onChange={(value) => changeField('name', value)}
+            error={nameError}
+          />
+          <TextField
+            ref={emailRef}
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            value={values.email}
+            onChange={(value) => changeField('email', value)}
+            error={emailError}
+            errorAction={
+              showLoginInstead && (
+                <>
+                  {' '}
+                  <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
+                    Log in instead
+                  </Link>
+                </>
+              )
+            }
+          />
+          <TextField
+            ref={passwordRef}
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            hint="At least 8 characters."
+            value={values.password}
+            onChange={(value) => changeField('password', value)}
+            error={passwordError}
+          />
 
-        {/* Always in the page (empty when there is no message), so screen readers announce text added to it. */}
-        <div role="alert">
-          {serverFeedback?.formMessage && (
-            <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
-          )}
-        </div>
+          {/* Always in the page (empty when there is no message), so screen readers announce text added to it. */}
+          <div role="alert">
+            {serverFeedback?.formMessage && (
+              <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
+            )}
+          </div>
 
-        <button
-          type="submit"
-          disabled={pending}
-          // The transparent border is drawn in a system colour in high-contrast mode, where the green background is
-          // replaced; without it the button would lose its edge and look like plain text.
-          className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
-        >
-          {pending ? 'Creating account…' : 'Create account'}
-        </button>
-      </form>
+          <button
+            type="submit"
+            disabled={pending}
+            // The transparent border is drawn in a system colour in high-contrast mode, where the green background is
+            // replaced; without it the button would lose its edge and look like plain text.
+            className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
+          >
+            {pending ? 'Creating account…' : 'Create account'}
+          </button>
+        </form>
 
-      <p className="mt-4 text-slate-700">
-        Already have an account?{' '}
-        <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
-          Log in
-        </Link>
-      </p>
-    </section>
+        <p className="mt-4 text-slate-700">
+          Already have an account?{' '}
+          <Link to="/login" state={loginState} className="font-medium text-emerald-800 underline">
+            Log in
+          </Link>
+        </p>
+      </section>
+    </div>
   );
 }

@@ -43,9 +43,11 @@ Source of truth for restyling the React client. The visual reference is the desi
   --color-notice-line: #eed9b4;
   --color-notice-text: #6b4a13;
   --color-neutral-pill: #f0ede6;
+  --color-pill-text: #4a514c; /* text on the neutral pill */
+  --color-on-ink-disabled: #e9e6df; /* text on a disabled / in-progress button */
 
-  --font-sans: "Manrope", system-ui, sans-serif;
-  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
 
   --shadow-card: 0 1px 2px rgb(17 22 20 / 0.04);
   --shadow-raised:
@@ -60,7 +62,7 @@ Source of truth for restyling the React client. The visual reference is the desi
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
-  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+  href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
   rel="stylesheet"
 />
 ```
@@ -69,14 +71,14 @@ Source of truth for restyling the React client. The visual reference is the desi
 
 | Use                                  | Font    | Size / weight                                                                          |
 | ------------------------------------ | ------- | -------------------------------------------------------------------------------------- |
-| Page hero title                      | display | 52 px (36 px under 640 px), 600, tracking -0.02em, line-height 1.05                    |
-| Section title ("3 tables available") | display | 30 px, 600                                                                             |
-| Big numbers (table "T1", day "17")   | display | 34–40 px, 600, line-height 1                                                           |
+| Page hero title                      | display | 52 px (36 px under 640 px), 700, tracking -0.03em, line-height 1.05                    |
+| Section title ("3 tables available") | display | 30 px, 700, tracking -0.03em                                                           |
+| Big numbers (table "T1", day "17")   | display | 34–40 px, 700, tracking -0.03em, line-height 1                                         |
 | Eyebrow label ("RESERVATIONS")       | sans    | 11–12 px, 600, uppercase, tracking 0.14em, brass on dark / brass-text on light         |
 | Body                                 | sans    | 15 px, 400                                                                             |
 | Field label                          | sans    | 11 px, 600, uppercase, tracking 0.1em, muted (search bar); 13 px 600 body (auth forms) |
 
-Serif is only for headings and big numbers. Everything people read in sentences or tap is Manrope.
+Display and sans are both Plus Jakarta Sans. Display is only for headings and big numbers, bold (700), with tracking -0.03em at 30 px and up and -0.02em below. Everything people read in sentences or tap uses sans.
 
 ## Components
 
@@ -98,7 +100,7 @@ Serif is only for headings and big numbers. Everything people read in sentences 
 
 Dark band (`bg-ink`), content max width 1120 px, 32 px side padding, 1 px `ink-raised` line under the header row.
 
-- Left: logo mark (30 px circle, 1.5 px brass border, brass fork-and-knife icon) + "Table Booking" in display 21 px 600 white.
+- Left: logo mark (30 px circle, 1.5 px brass border, brass fork-and-knife icon) + "Table Booking" in display 21 px 700, tracking -0.02em, white.
 - Right: nav links 14 px, `on-ink-muted`; the active link is white, 600, with a 1.5 px brass underline (NavLink `isActive`).
 - Logged in: avatar circle (32 px, `ink-raised`, brass initial = first letter of the email, uppercase, `aria-hidden`), email in `on-ink-muted`, "Log out" as an outline pill (1 px `ink-line`, white text).
 - Pages that show a hero (Find a table, My bookings) continue the dark band under the header; `Layout` keeps rendering `<Outlet />` and each page renders its own hero. Login/Register don't use the dark hero (see below).

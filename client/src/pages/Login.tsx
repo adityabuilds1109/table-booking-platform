@@ -75,61 +75,63 @@ export default function Login() {
   const registerState = from === undefined ? undefined : { from };
 
   return (
-    <section className="mx-auto max-w-md">
-      <title>Log in – Table Booking</title>
-      <h1 className="text-2xl font-bold">Log in</h1>
-      {expired && (
-        <p role="status" className="mt-2 rounded border border-amber-200 bg-amber-50 p-3 text-amber-900">
-          Your session has expired. Please log in again.
+    <div className="mx-auto max-w-4xl px-4 py-6">
+      <section className="mx-auto max-w-md">
+        <title>Log in – Table Booking</title>
+        <h1 className="text-2xl font-bold">Log in</h1>
+        {expired && (
+          <p role="status" className="mt-2 rounded border border-amber-200 bg-amber-50 p-3 text-amber-900">
+            Your session has expired. Please log in again.
+          </p>
+        )}
+        <p className="mt-2 text-slate-600">All fields are required.</p>
+
+        <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
+          <TextField
+            ref={emailRef}
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            autoCapitalize="none"
+            value={values.email}
+            onChange={(value) => changeField('email', value)}
+            error={emailError}
+          />
+          <TextField
+            ref={passwordRef}
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            value={values.password}
+            onChange={(value) => changeField('password', value)}
+            error={passwordError}
+          />
+
+          {/* Always in the page (empty when there is no message): screen readers announce text put into an existing alert region more reliably than a region that appears together with its text. */}
+          <div role="alert">
+            {serverFeedback?.formMessage && (
+              <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
+          >
+            {pending ? 'Logging in…' : 'Log in'}
+          </button>
+        </form>
+
+        <p className="mt-4 text-slate-700">
+          New here?{' '}
+          <Link to="/register" state={registerState} className="font-medium text-emerald-800 underline">
+            Create an account
+          </Link>
         </p>
-      )}
-      <p className="mt-2 text-slate-600">All fields are required.</p>
-
-      <form noValidate onSubmit={handleSubmit} aria-busy={pending} className="mt-4 space-y-4">
-        <TextField
-          ref={emailRef}
-          label="Email"
-          name="email"
-          type="email"
-          autoComplete="username"
-          autoCapitalize="none"
-          value={values.email}
-          onChange={(value) => changeField('email', value)}
-          error={emailError}
-        />
-        <TextField
-          ref={passwordRef}
-          label="Password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={values.password}
-          onChange={(value) => changeField('password', value)}
-          error={passwordError}
-        />
-
-        {/* Always in the page (empty when there is no message): screen readers announce text put into an existing alert region more reliably than a region that appears together with its text. */}
-        <div role="alert">
-          {serverFeedback?.formMessage && (
-            <p className="rounded border border-red-200 bg-red-50 p-3 text-red-800">{serverFeedback.formMessage}</p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded border border-transparent bg-emerald-700 px-4 py-2 font-semibold text-white hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-500"
-        >
-          {pending ? 'Logging in…' : 'Log in'}
-        </button>
-      </form>
-
-      <p className="mt-4 text-slate-700">
-        New here?{' '}
-        <Link to="/register" state={registerState} className="font-medium text-emerald-800 underline">
-          Create an account
-        </Link>
-      </p>
-    </section>
+      </section>
+    </div>
   );
 }
